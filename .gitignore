@@ -1,0 +1,5 @@
+*.pyc
+examples/
+ref/
+tools/
+utils/

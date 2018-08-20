@@ -1,0 +1,193 @@
+{
+    "tools":{
+        "meta":{
+            "path":{
+                "tools":"/BiO/sgpark/GenomeAnnotation/Tools"
+            }
+        },
+        "REPEATMASKER":{
+            "HOME":"[TOOLS_HOME]/RepeatMasker/RepeatMasker",
+            "EXEC":"[HOME]/RepeatMasker",
+            "NAME":"RepeatMasker",
+            "N_CPU":"40",
+            "VERSION":"4.0.6",
+            "CITATION":"http://repeatmasker.org/",
+            "LICENSE":"RepeatMasker 'open-3.0' is licensed under the Open Source License v2.1",
+            "__comment":"reference based repeat sequece search"
+        },
+        "REPEATMODELER":{
+            "HOME":"[TOOLS_HOME]/RepeatModeler/RepeatModeler",
+            "EXEC":"[HOME]/RepeatModeler",
+            "NAME":"RepeatModeler",
+            "N_CPU":"40",
+            "VERSION":"1.0.8",
+            "CITATION":"http://repeatmasker.org/",
+            "LICENSE":"RepeatModeler 'open-1.0' is licensed under the Open Source License v2.1.",
+            "__comment":"de novo based repeat sequence search"
+        },
+        "BUILDDB":{
+            "HOME":"[TOOLS_HOME]/RepeatModeler/RepeatModeler",
+            "EXEC":"[HOME]/BuildDatabase",
+            "NAME":"Repeat Modeler Build database",
+            "N_CPU":"1",
+            "__comment":"Build Database"
+        },
+        "BEDTOOLS":{
+            "HOME":"[TOOLS_HOME]/bedtools/bedtools2-2.22.1",
+            "EXEC":"[HOME]/bin/bedtools",
+            "NAME":"bedtools",
+            "VERSION":"2.22.1",
+            "CITATION":"Quinlan A. R., and Hall I. M., (2010). BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics. 26(6):841-842.",
+            "__comment":"NGS mapper"
+        },
+        "PRIMER3":{
+            "HOME":"[TOOLS_HOME]/Primer3/primer3-2.2.3",
+            "EXEC":"[HOME]/src/primer3_core",
+            "NAME":"primer3",
+            "VERSION":"2.2.3",
+            "CITATION":"Untergasser A, Cutcutache I, Koressaar T, Ye J, Faircloth BC, Remm M, Rozen SG. Primer3--new capabilities and interfaces. Nucleic Acids Res. 2012 Aug;40(15):e115.",
+            "__comment":"primer designer"
+        },
+        "KRONATOOLS":{
+            "HOME":"[TOOLS_HOME]/KronaTools/KronaTools-2.5",
+            "EXEC":"[HOME]/scripts",
+            "NAME":"Kronatools",
+            "VERSION":"2.5",
+            "CITATION":"Ondov BD, Bergman NH, and Phillippy AM. Interactive metagenomic visualization in a Web browser. BMC Bioinformatics. 2011 Sep 30; 12(1):385.",
+            "__comment":"Taxonomy profilling software"
+        },
+        "EXONERATE":{
+            "HOME":"[TOOLS_HOME]/Exonerate/exonerate-2.2.0-x86_64",
+            "EXEC":"[HOME]/bin/exonerate",
+            "NAME":"exonerate",
+            "VERSION":"2.2",
+            "CITATION":"Slater GS, Birney E. Automated generation of heuristics for biological sequence comparison. BMC Bioinformatics. 2005 Feb 15;6:31.",
+            "__comment":"protein based gene prediction software"
+        },
+        "AUGUSTUS":{
+            "HOME":"[TOOLS_HOME]/AUGUSTUS/augustus-3.2.1",
+            "EXEC":"[HOME]",
+            "NAME":"augustus",
+            "VERSION":"3.2.1",
+            "CITATION":"Stanke M, Waack S. Gene prediction with a hidden Markov model and a new intron submodel. Bioinformatics. 2003 Oct;19 Suppl 2:ii215-25.",
+            "__comment":"ab initio gene prediction software"
+        },
+        "BWA":{
+            "HOME":"[TOOLS_HOME]/bwa/bwa-0.7.12",
+            "EXEC":"[HOME]/bwa",
+            "NAME":"bwa",
+            "N_CPU":"16",
+            "VERSION":"0.7.12",
+            "CITATION":"Li H., Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. 2013, arXiv:1303.3997v2",
+            "__comment":"NGS mapper"
+        },
+        "BOWTIE1":{
+            "HOME":"[TOOLS_HOME]/bowtie/bowtie-1.1.2",
+            "EXEC":"[HOME]",
+            "NAME":"bowtie1",
+            "N_CPU":"16",
+            "VERSION":"1.1.1",
+            "CITATION":"",
+            "__comment":"NGS mapper"
+        },
+        "BOWTIE2":{
+            "HOME":"[TOOLS_HOME]/bowtie/bowtie2-2.2.6",
+            "EXEC":"[HOME]",
+            "NAME":"bowtie2",
+            "N_CPU":"16",
+            "VERSION":"2.2.6",
+            "CITATION":"",
+            "__comment":"NGS mapper"
+        },
+        "TOPHAT":{
+            "HOME":"[TOOLS_HOME]/TopHat/current",
+            "EXEC":"[HOME]",
+            "NAME":"TopHat",
+            "N_CPU":"16",
+            "VERSION":"2.1.1",
+            "PROFILE":{
+                "NORMAL":["--keep-fasta-order"],
+                "BENCH":["--keep-fasta-order","--keep-tmp"]
+            },
+            "CITATION":"Kim D. et al., TopHat2: accurate alignment of transcriptomes in the presence of insertions, deletions and gene fusions. Genome Biology 2013, 14:R36",
+            "LICENSE":"Boost Software License, Version 1.0",
+            "__comment":"RNA mapper"
+        },
+        "SAMTOOLS":{
+            "HOME":"[TOOLS_HOME]/samtools",
+            "EXEC":"[HOME]/samtools-0.1.19/samtools",
+            "NAME":"Samtools",
+            "N_CPU":"32",
+            "N_CPU_S":{
+                "index":"2",
+                "split":"2"
+            },
+            "RAM":"2000000000",
+            "TEMP_PATH":"/tmp/gipipe/[PID]/[NAME]",
+            "VERSION":"1.2",
+            "CITATION":"Li H. et al., Bioinformatics. 2009 Aug 15, 25(16):2078-9",
+            "__comment":"NGS mapper"
+        },
+        "GENEMARK":{
+            "HOME":"[TOOLS_HOME]/GeneMark/gm_et_linux_64/gmes_petap",
+            "EXEC":"[HOME]",
+            "NAME":"GeneMark-ET",
+            "VERSION":"4.32",
+            "CITATION":"Lomsadze A., Burns P.D. and Borodovsky M., Integration of mapped RNA-Seq reads into automatic training of eukaryotic gene finding algorithm. Nucleic Acids Research, 2014, July 2",
+            "__comment":"Gene Prediction Tool"
+        },
+        "BAMTOOLS":{
+            "HOME":"[TOOLS_HOME]/BamTools/bamtools-2.4.0",
+            "EXEC":"[HOME]/bin/bamtools",
+            "NAME":"BamTools",
+            "VERSION":"2.4.0",
+            "__comment":"Bam format file processing"
+        },
+        "INTERPROSCAN":{
+            "HOME":"[TOOLS_HOME]/InterProScan/interproscan-5.17-56.0",
+            "EXEC":"[HOME]/interproscan.sh",
+            "NAME":"InterProScan",
+            "VERSION":"5.17-56.0",
+            "__comment":"Gene Annotation Package Tools"
+        },
+        "TRNASCAN":{
+            "HOME":"[TOOLS_HOME]/tRNAScan-SE/tRNAscan-SE-1.4alpha",
+            "EXEC":"[HOME]/bin/tRNAscan-SE",
+            "NAME":"tRNAScan-SE",
+            "VERSION":"1.4 alpha",
+            "__comment":"tRNA prediction Tool"
+        },
+        "INFERNAL":{
+            "HOME":"[TOOLS_HOME]/Infernal/infernal-1.1.1",
+            "EXEC":"[HOME]/bin/",
+            "NAME":"Infernal",
+            "VERSION":"1.1.1",
+            "__comment":"INFERence of RNA ALignment"
+        },
+        "BLAST-PLUS":{
+            "HOME":"[TOOLS_HOME]/ncbi-blast-plus/ncbi-blast-2.2.29+",
+            "EXEC":"[HOME]/bin/",
+            "EXEC_S":{
+                "blastx":"[HOME]/bin/blastx",
+                "blastn":"[HOME]/bin/blastn",
+                "blastp":"[HOME]/bin/blastp",
+                "makeblastdb":"[HOME]/bin/makeblastdb"
+            },
+            "NAME":"NCBI BLAST",
+            "N_CPU":"8",
+            "VERSION":"2.2.29+",
+            "CITATION":"",
+            "__comment":"NGS mapper"
+        },
+        "GMAP":{
+            "HOME":"[TOOLS_HOME]/GMAP/gmap-2016-11-07",
+            "EXEC":"[HOME]/bin/",
+            "NAME":"GMAP",
+            "VERSION":"2016-11-07",
+            "CITATION":"Thomas D. Wu and Colin K. Watanabe GMAP: a genomic mapping and alignment program for mRNA and EST sequences. Bioinformatics 2005 21:1859-1875",
+            "__comment":"A Genomic Mapping and Alignment Program for mRNA and EST Sequences"
+        },
+        "__comment":"GiSys GiPipe TOOLS_JSON"
+    }
+}
+
