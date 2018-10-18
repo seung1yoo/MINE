@@ -18,8 +18,8 @@ from do_bismark import *
 from do_target_check import *
 from do_metilene import *
 #
-from do_metilene_input import *
-from do_metilene_parse import *
+#from do_metilene_input import *
+#from do_metilene_parse import *
 
 
 
@@ -271,9 +271,9 @@ def main(mode, config, tools_fn, refs_fn):
         pipes.append('do_targetcheck_sort')
         pipes.append('do_targetcheck_grep')
         #
-        #pipes.append('do_metilene_input')
-        #pipes.append('do_metilene')
-        #pipes.append('do_metilene_parse')
+        pipes.append('do_metilene_prepare')
+        pipes.append('do_metilene_exe')
+        pipes.append('do_metilene_parse')
         #
         ## Report
         #
@@ -308,16 +308,15 @@ def main(mode, config, tools_fn, refs_fn):
             Do_bismark_nucl(pipe, mine, eco)
         elif pipe in ['do_bismark_report']:
             Do_bismark_report(pipe, mine, eco)
-
         elif pipe in ['do_targetcheck_sort']:
             Do_targetcheck_sort(pipe, mine, eco)
         elif pipe in ['do_targetcheck_grep']:
             Do_targetcheck_grep(pipe, mine, eco)
 
-        elif pipe in ['do_metilene_input']:
-            Do_metilene_bismark2input(pipe, mine, eco)
-        elif pipe in ['do_metilene']:
-            Do_metilene(pipe, mine, eco)
+        elif pipe in ['do_metilene_prepare']:
+            Do_metilene_prepare(pipe, mine, eco)
+        elif pipe in ['do_metilene_exe']:
+            Do_metilene_exe(pipe, mine, eco)
         elif pipe in ['do_metilene_parse']:
             Do_metilene_parse(pipe, mine, eco)
         else:

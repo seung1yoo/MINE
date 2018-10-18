@@ -119,7 +119,7 @@ class Do_targetcheck_grep:
     def update_ecosystem(self, input_dic):
         for sam_num, f_type_dic in input_dic.iteritems():
             lvs = [self.name, sam_num,
-                   'call.final',
+                   'call.bedGraph.final',
                    self.make_out_fn(sam_num)]
             self.eco.add_to_ecosystem(lvs)
 
