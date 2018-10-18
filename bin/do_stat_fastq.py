@@ -36,6 +36,19 @@ class Do_stat_fastq:
             stat_fn = '{0}.stat'.format(f_type_dic['1.fq.gz'])
             self.eco.add_to_ecosystem([self.name,sam_num,'all.stat',stat_fn])
 
+    def make_cmds(self, app, input_dic):
+        cmds = list()
+        for sam_num, f_type_dic in input_dic.iteritems():
+            stat_fn = '{0}.stat'.format(f_type_dic['1.fq.gz'])
+            if os.path.exists(stat_fn):
+                continue
+            opts = list()
+            opts.append(app.exe)
+            opts.append(f_type_dic['1.fq.gz'])
+            opts.append(f_type_dic['2.fq.gz'])
+            cmds.append(' '.join(opts))
+        return cmds
+
     def select_input(self):
         input_dic = dict()
         if self.name in ['do_stat_fastq_raw']:
@@ -46,18 +59,8 @@ class Do_stat_fastq:
             pass
         return input_dic
 
-    def make_cmds(self, app, input_dic):
-        cmds = list()
-        for sam_num, f_type_dic in input_dic.iteritems():
-            opts = list()
-            opts.append(app.exe)
-            opts.append(f_type_dic['1.fq.gz'])
-            opts.append(f_type_dic['2.fq.gz'])
-            cmds.append(' '.join(opts))
-        return cmds
-
 def main():
-    pass
+    print("Not supported")
 
 if __name__=='__main__':
     main()

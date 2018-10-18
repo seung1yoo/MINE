@@ -54,6 +54,11 @@ class Do_fastqc:
         cmds = list()
         for sam_num, f_type_dic in input_dic.iteritems():
             for f_type, f_path in f_type_dic.iteritems():
+                base_path = f_path.rstrip('.fq.gz')
+                fastqc_dir = '{0}_fastqc'.format(base_path)
+                if os.path.exists(fastqc_dir):
+                    continue
+                #
                 opts = list()
                 opts.append(app.exe)
                 opts.append('-f fastq')
@@ -74,7 +79,7 @@ class Do_fastqc:
         return input_dic
 
 def main():
-    pass
+    print "Not Supported"
 
 if __name__=='__main__':
     main()

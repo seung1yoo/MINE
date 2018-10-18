@@ -42,7 +42,7 @@ def main(fa_fn, chr_id, out_dir):
     fh_dic.setdefault('LCP', open(os.path.join(out_dir,'{0}.LCP.raw'.format(chr_id)),'w'))
     #
     for record in SeqIO.parse(open(fa_fn), 'fasta'):
-        _chr, start, end, _id = record.id.split('_')
+        _chr, start, end, _promoter, _id = record.id.split('_')
         seq = str(record.seq)
         #
         pre_type = ''

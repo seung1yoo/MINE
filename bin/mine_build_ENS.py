@@ -9,6 +9,8 @@ from subprocess import Popen, PIPE
 import matplotlib as mpl
 import matplotlib.pylab as plt
 #
+import json
+#
 bismark_build = '/BiO/BioPeople/siyoo/MINE/tools/Bismark_v0.19.1/bismark_genome_preparation'
 samtools = '/BiO/BioTools/Rine/Tools/samtools/current/samtools'
 bowtie2 = '/BiO/BioTools/bowtie/bowtie2-2.2.3'
@@ -68,10 +70,11 @@ def fa_filter_by_chr(ref_fa_fn, chrs, home, name):
         refchr_fa_fh = open(refchr_fa_fn, 'w')
         for record in SeqIO.parse(open(ref_fa_fn), 'fasta'):
             if record.id in chrs:
-                print 'select chr : {0}'.format(record.id)
+                #print 'select chr : {0}'.format(record.id)
                 SeqIO.write(record, refchr_fa_fh, 'fasta')
             else:
-                print 'skip chr : {0}'.format(record.id)
+                #print 'skip chr : {0}'.format(record.id)
+                pass
         refchr_fa_fh.close()
     #
     refchr_fai_fn = do_samtools_faidx(refchr_fa_fn)
@@ -103,8 +106,7 @@ def fa_split(fa, chrs, home):
         pass
     else:
         for record in SeqIO.parse(open(fa), 'fasta'):
-            print 'split chr : {0}'.format(record.id)
-            #
+            #print 'split chr : {0}'.format(record.id)
             out = open('{0}/{1}.fa'.format(home_chr,record.id),'w')
             SeqIO.write(record, out, 'fasta')
             out.close()
@@ -117,6 +119,8 @@ def do_bismark_genome_preparation(refchr_fa_fn, home):
     #
     print 'bismark genome preparation...'
     home_chr = os.path.join(home, 'chr')
+    if not os.path.exists(home_chr):
+        os.makedirs(home_chr)
     if not os.path.exists('{0}/Bisulfite_Genome'.format(home_chr)):
         cmds = list()
         cmds.append(bismark_build)
@@ -126,8 +130,11 @@ def do_bismark_genome_preparation(refchr_fa_fn, home):
         cmds.append('--verbos')
         cmds.append(home_chr)
         #
+        print cmds
         proc = Popen(cmds, stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate()
+        print out
+        print err
     return home_chr
 
 class ANNO_CGI:
@@ -245,8 +252,22 @@ class ANNO_CGI:
             cgi_fh = open(cgi_fn, 'w')
             for num, info_dic in sorted(cgi_dic.iteritems()):
                 cgi_fh.write('{0}\n'.format('\t'.join(
-                    [_chr,str(info_dic['start']),str(info_dic['end']),str(info_dic['len']),
-                        str(info_dic['gc_count']),str(info_dic['gc_ratio']),str(info_dic['R'])])))
+                    [_chr,
+                     str(info_dic['start']),
+                     str(info_dic['end']),
+                     '{0}_{1}_{2}_CGI_CHR{0}CGI{3:0>10}|{4}|{5}|{6}|{7}'.format(
+                         _chr,
+                         str(info_dic['start']),
+                         str(info_dic['end']),
+                         str(num),
+                         str(info_dic['len']),
+                         str(info_dic['gc_count']),
+                         str(info_dic['gc_ratio']),
+                         str(info_dic['R']))
+                     ]
+                     )
+                     )
+                     )
             cgi_fh.close()
             #
     def extract_around_cgi(self, name, in_bed_dic, offset):
@@ -265,6 +286,8 @@ class ANNO_CGI:
                 _chr = items[0]
                 start = items[1]
                 end = items[2]
+                attr = items[3]
+                cgi_id = attr.split('_')[-1].split('|')[0]
                 #
                 if name.startswith('N'):
                     new_start = int(start)+int(offset)
@@ -282,20 +305,27 @@ class ANNO_CGI:
                         new_end = int(self.len_dic[_chr])
                 #
                 bed_fh_dic[_chr].write('{0}\n'.format('\t'.join(
-                    [str(x) for x in [_chr, new_start, new_end]])))
+                    [str(x) for x in [
+                        _chr,
+                        new_start,
+                        new_end,
+                        '{0}_{1}_{2}_{3}_{4}'.format(_chr,str(new_start),str(new_end),name,cgi_id)
+                        ]
+                    ]
+                    )))
         for _chr, fh in bed_fh_dic.iteritems():
             fh.close()
-
-
+        #
     def stats(self,_type):
         #
         count_dic = dict()
         for _chr, fn in self.cgi_dic[_type].iteritems():
             for line in open(fn):
-                items = line.rstrip('\n').split()
-                count_dic.setdefault('len',[]).append(int(items[3]))
-                count_dic.setdefault('GC',[]).append(float(items[5]))
-                count_dic.setdefault('obs/exp',[]).append(float(items[6]))
+                items = line.rstrip('\n').split('\t')
+                units = items[3].split('_')[-1].split('|')
+                count_dic.setdefault('len',[]).append(int(units[1]))
+                count_dic.setdefault('GC',[]).append(float(units[3]))
+                count_dic.setdefault('obs/exp',[]).append(float(units[4]))
         #
         plt.clf()
         n, bins, patches = plt.hist(count_dic['len'], log=True, bins=100)
@@ -330,6 +360,12 @@ class ANNO_CGI:
         plt.ylabel('Count')
         plt.savefig('{0}/{1}_ObsExp.distribution.png'.format(self.out_dir,_type))
         #
+        cgi_stats_dic = dict()
+        cgi_stats_dic.setdefault('len','{0}/{1}_Length.distribution.png'.format(self.out_dir,_type))
+        cgi_stats_dic.setdefault('GC','{0}/{1}_GCpct.distribution.png'.format(self.out_dir,_type))
+        cgi_stats_dic.setdefault('obs/exp','{0}/{1}_ObsExp.distribution.png'.format(self.out_dir,_type))
+        #
+        return cgi_stats_dic
 
 
 class ANNO_PROMOTER:
@@ -409,7 +445,7 @@ class ANNO_PROMOTER:
                 p_end = int(self.len_dic[_chr])
             #
             bed_fh_dic[_chr].write('{0}\n'.format('\t'.join([_chr,str(p_start),str(p_end),
-                '{0}_{1}_{2}_{3}'.format(_chr,str(p_start),str(p_end),_id)])))
+                '{0}_{1}_{2}_Promoter_{3}'.format(_chr,str(p_start),str(p_end),_id)])))
         for _chr, fh in bed_fh_dic.iteritems():
             fh.close()
         return bed_dic
@@ -665,6 +701,26 @@ class ANNO_GENOMIC_RESION(ANNO_PROMOTER):
         self.extract_region('EXON')
         self.extract_region('CDS')
         #
+        self.bed_sort()
+
+    def bed_sort(self):
+        global bedtools
+        #
+        cmds = list()
+        for name, chr_dic in self.gr_bed_dic.iteritems():
+            for _chr, fn in chr_dic.iteritems():
+                if os.path.exists(fn):
+                    continue
+                opts = [bedtools]
+                opts.append('sort')
+                opts.append('-i')
+                opts.append('{0}.raw'.format(fn))
+                opts.append('>')
+                opts.append(fn)
+                cmds.append(' '.join(opts))
+            #
+        if cmds:
+            RunQsub(cmds, 'all.q', '1', self.log_dir, self.scr_dir, 'bedsort.gr')
 
     def extract_region(self, name):
         for _chr in self.chrs:
@@ -673,7 +729,7 @@ class ANNO_GENOMIC_RESION(ANNO_PROMOTER):
         #
         bed_fh_dic = dict()
         for _chr, fn in self.gr_bed_dic[name].iteritems():
-            bed_fh_dic.setdefault(_chr, open(fn,'w'))
+            bed_fh_dic.setdefault(_chr, open('{0}.raw'.format(fn),'w'))
         #
         for line in open(self.gtf_fn):
             if line.startswith('#'):
@@ -714,7 +770,8 @@ class ANNO_GENOMIC_RESION(ANNO_PROMOTER):
                 print attribute
                 sys.exit()
             #
-            bed_fh_dic[_chr].write('{0}\n'.format('\t'.join([_chr,str(gr_start),str(gr_end),gr_id])))
+            bed_fh_dic[_chr].write('{0}\n'.format('\t'.join([_chr,str(gr_start),str(gr_end),
+                '{0}'.format('_'.join([_chr,str(gr_start),str(gr_end),name,gr_id]))])))
             #
         for _chr, fh in bed_fh_dic.iteritems():
             fh.close()
@@ -748,7 +805,263 @@ class ANNO_GENOMIC_RESION(ANNO_PROMOTER):
     def extract_cds(self, _chr, start, end, attribute):
         return start, end, self.find_attr_id(attribute, 'transcript_id')
 
+class ANNO_MERGE:
+    def __init__(self, cg_dic, cgi_dic, promt_dic, promt_cls_dic, gr_dic, home, dir_name):
+        #
+        global bedtools
+        self.bedtools = bedtools
+        #
+        self.out_dir = os.path.join(home, dir_name)
+        if not os.path.exists(self.out_dir):
+            os.makedirs(self.out_dir)
+        self.scr_dir = os.path.join(self.out_dir, 'script')
+        if not os.path.exists(self.scr_dir):
+            os.makedirs(self.scr_dir)
+        self.log_dir = os.path.join(self.out_dir, 'log')
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+        #
+        self.merge_dic = dict()
+        #
+        self.add_dic(cg_dic, 'CpG')
+        self.add_dic(cgi_dic['CGI'], 'CGI')
+        self.add_dic(cgi_dic['Nshore'], 'Nshore')
+        self.add_dic(cgi_dic['Nshelf'], 'Nshelf')
+        self.add_dic(cgi_dic['Sshore'], 'Sshore')
+        self.add_dic(cgi_dic['Sshelf'], 'Sshelf')
+        self.add_dic(promt_dic, 'Promoter')
+        self.add_dic2(promt_cls_dic, 'Promoter')
+        self.add_dic(gr_dic['genebody'], 'genebody')
+        self.add_dic(gr_dic['UP1K'], 'UP1K')
+        self.add_dic(gr_dic['DW1K'], 'DW1K')
+        self.add_dic(gr_dic['5UTR'], '5UTR')
+        self.add_dic(gr_dic['3UTR'], '3UTR')
+        self.add_dic(gr_dic['EXON'], 'EXON')
+        self.add_dic(gr_dic['CDS'], 'CDS')
+        #
+        for _chr, name_dic in self.merge_dic.iteritems():
+            for name, a_fn in name_dic.iteritems():
+                #print _chr, name, a_fn
+                pass
+        #
+        self.intersect_dic = dict()
+        #
+        for _chr, name_dic in self.merge_dic.iteritems():
+            self.exe_intersectbed(_chr, name_dic)
+        #
+        for _chr, pair_dic in self.intersect_dic.iteritems():
+            for pair, a_fn in pair_dic.iteritems():
+                #print _chr, pair, a_fn
+                pass
+        #
+        self.annoTable_dic = dict()
+        #
+        self.anno_cpg()
+        #
+
+    def anno_cpg(self):
+        #### pair list-up
+        ### Interesting Genomic Regions
+        ## Inter-genomic region
+        #CpG_UP1K
+        #CpG_genebody
+        #CpG_DW1K
+        ## Intra-genomic region
+        #CpG_5UTR
+        #CpG_CDS
+        #CpG_EXON
+        #CpG_3UTR
+        ## Promoter region
+        #CpG_Promoter
+        #CpG_HCP
+        #CpG_ICP
+        #CpG_LCP
+        ## CpG island region
+        #CpG_Nshelf
+        #CpG_Nshore
+        #CpG_CGI
+        #CpG_Sshore
+        #CpG_Sshelf
+        #
+        regions = ['UP1K','genebody','DW1K',
+                   '5UTR','CDS','EXON','3UTR',
+                   'Promoter','HCP','ICP','LCP',
+                   'Nshelf','Nshore','CGI','Sshore','Sshelf']
+        #
+        for _chr, pair_dic in self.intersect_dic.iteritems():
+            print 'ANNO_MERGE-ing... {0}'.format(_chr)
+            #
+            annoTable_fn = os.path.join(self.out_dir, '{0}.annoTable'.format(_chr))
+            self.annoTable_dic.setdefault(_chr, annoTable_fn)
+            if os.path.exists(annoTable_fn):
+                continue
+            #
+            anno_dic = self.init_anno_dic(_chr, regions)
+            #
+            for region in regions:
+                intersect_fn = pair_dic['CpG_{0}'.format(region)]
+                for line in open(intersect_fn):
+                    items = line.rstrip('\n').split('\t')
+                    s_pos = items[1]
+                    #
+                    if region in ['3UTR','5UTR','CDS','EXON','UP1K','genebody','DW1K']:
+                        _id = items[7]
+                    elif region in ['Promoter','HCP','ICP','LCP']:
+                        _id = items[7]
+                    elif region in ['CGI','Nshelf','Nshore','Sshelf','Sshore']:
+                        _id = items[7]
+                    #
+                    if not _id in anno_dic[s_pos][region]:
+                        anno_dic[s_pos][region].append(_id)
+                #
+            #
+            out = open(annoTable_fn, 'w')
+            new_titles = self.make_annoTable_titles(regions)
+            out.write('#{0}\n'.format('\t'.join(new_titles)))
+            for line in open(self.merge_dic[_chr]['CpG']):
+                items = line.rstrip('\n').split('\t')
+                s_pos = items[1]
+                e_pos = items[2]
+                _type = items[3]
+                #
+                new_items = [_chr,s_pos,e_pos,_type]
+                _count = 0
+                for region in regions:
+                    _count += len(anno_dic[s_pos][region])
+                    new_items.append(str(len(anno_dic[s_pos][region])))
+                for region in regions:
+                    new_items.append(','.join((anno_dic[s_pos][region])))
+                #
+                if not _count in [0]:
+                    out.write('{0}\n'.format('\t'.join(new_items)))
+            out.close()
+            #
+    def make_annoTable_titles(self, regions):
+        new_titles = ['CHR','START','END','TYPE']
+        for region in regions:
+            new_titles.append('NUM.{0}'.format(region))
+        for region in regions:
+            new_titles.append('MEMBER.{0}'.format(region))
+        return new_titles
+
+    def init_anno_dic(self, _chr, regions):
+        anno_dic = dict()
+        for line in open(self.merge_dic[_chr]['CpG']):
+            items = line.rstrip('\n').split('\t')
+            s_pos = items[1]
+            for region in regions:
+                anno_dic.setdefault(s_pos, {}).setdefault(region, [])
+        return anno_dic
+
+    def exe_intersectbed(self, _chr, name_dic):
+        #
+        for name, a_fn in name_dic.iteritems():
+            pair = 'CpG_{0}'.format(name)
+            intersect_fn = os.path.join(self.out_dir,'{0}.intersect.{1}'.format(_chr, pair))
+            self.intersect_dic.setdefault(_chr, {}).setdefault(pair, intersect_fn)
+        #
+        cmds = list()
+        for name, a_fn in name_dic.iteritems():
+            pair = 'CpG_{0}'.format(name)
+            if name in ['CpG']:
+                continue
+            if os.path.exists(self.intersect_dic[_chr][pair]):
+                continue
+            opts = [self.bedtools]
+            opts.append('intersect')
+            opts.append('-a')
+            opts.append(name_dic['CpG'])
+            opts.append('-b')
+            opts.append(a_fn)
+            opts.append('-wa')
+            opts.append('-wb')
+            opts.append('-sorted')
+            opts.append('>')
+            opts.append(self.intersect_dic[_chr][pair])
+            cmds.append(' '.join(opts))
+        if cmds:
+            RunQsub(cmds, 'all.q', '1', self.log_dir, self.scr_dir, 'intersect.{0}'.format(_chr))
+
+    def add_dic(self, a_dic, name):
+        for _chr, a_fn in a_dic.iteritems():
+            if os.path.exists(a_fn):
+                self.merge_dic.setdefault(_chr, {}).setdefault(name, a_fn)
+            else:
+                print 'not exists {0}'.format(a_fn)
+                sys.exit()
+
+    def add_dic2(self, a_dic, name):
+        for _chr, type_dic in a_dic.iteritems():
+            for _type, a_fn in type_dic.iteritems():
+                if os.path.exists(a_fn):
+                    self.merge_dic.setdefault(_chr, {}).setdefault(_type, a_fn)
+                else:
+                    print 'not exists {0}'.format(a_fn)
+                    sys.exit()
+
+class CONF_MAKER:
+    def __init__(self, args, refchr_len_fn, bismark_dir, cg_stats_dic, cgi_stats_dic, promt_stats_fn, annoTable_dic):
+        self.home = args.home
+        self.name = args.name
+        #
+        self.species_name = args.species_name
+        self.species_alias = args.species_alias
+        self.assembly_accession = args.assembly_accession
+        self.geneset_version = args.geneset_version
+        #
+        self.refchr_len_fn = refchr_len_fn
+        self.bismark_dir = bismark_dir
+        self.cg_stats_dic = cg_stats_dic # {chr : png}
+        self.cgi_len_png = cgi_stats_dic['len']
+        self.cgi_gc_png = cgi_stats_dic['GC']
+        self.cgi_obsexp_png = cgi_stats_dic['obs/exp']
+        self.promt_stats_fn = promt_stats_fn
+        self.annoTable_dic = annoTable_dic
+        #
+        #####
+        #
+        self.conf_dic = dict()
+        self.conf_dic.setdefault(self.name, {})
+        #
+        self.add_str('HOME',self.home)
+        self.add_str('SPECIES_NAME',self.species_name)
+        self.add_str('SPECIES_ALIAS',self.species_alias)
+        self.add_str('ASSEMBLY_ACC',self.assembly_accession)
+        self.add_str('GENESET_VER',self.geneset_version)
+        #
+        self.add_fn('CHR_LEN_FN',self.refchr_len_fn)
+        self.add_dir('BISMARK_DIR',self.bismark_dir)
+        self.add_dic('CGSITE_PNG',self.cg_stats_dic)
+        self.add_fn('CGI_LEN_PNG',self.cgi_len_png)
+        self.add_fn('CGI_GC_PNG',self.cgi_gc_png)
+        self.add_fn('CGI_OBSEXP_PNG',self.cgi_obsexp_png)
+        self.add_fn('PROMTER_STATS_FN',self.promt_stats_fn)
+        self.add_dic('CGSITE_ANNO',self.annoTable_dic)
+        #
+        self.conf_fn = os.path.join(self.home,'ref_{0}.json'.format(self.name))
+        conf_fh = open(self.conf_fn,'w')
+        json.dump(self.conf_dic,conf_fh,indent=4)
+        conf_fh.write('\n')
+        conf_fh.close()
+        #
+    def add_str(self, key, value):
+        self.conf_dic[self.name].setdefault(key, value)
+    def add_fn(self, key, value):
+        self.conf_dic[self.name].setdefault(key, value.replace(self.home, '[HOME]'))
+    def add_dir(self, key, value):
+        self.conf_dic[self.name].setdefault(key, value.replace(self.home, '[HOME]'))
+    def add_dic(self, key, a_dic):
+        for _chr, fn in a_dic.iteritems():
+            self.conf_dic[self.name].setdefault(key, {})
+            self.conf_dic[self.name][key].setdefault(_chr,fn.replace(self.home, '[HOME]'))
+        #
+    #
+
+
+
 def main(args):
+    ##### Make Reference HOME #####
+    print 'home PATH : {0}'.format(args.home)
     if not os.path.exists(args.home):
         os.makedirs(args.home)
     ##### Genome prepraration #####
@@ -758,62 +1071,95 @@ def main(args):
     print 'selected chromosome fasta  : {0}'.format(refchr_fa_fn)
     print 'selected chromosome length : {0}'.format(refchr_len_fn)
     #
-    bismark_dir = do_bismark_genome_preparation(refchr_fa_fn, args.home)
-    print 'bismark <genome_folder> : {0}'.format(bismark_dir)
-    #
+    print 'split fasta...'
     ref_fa_split_dic = fa_split(refchr_fa_fn, chrs, args.home)
     for chr_id, refchr_fa_fn in ref_fa_split_dic.iteritems():
         print 'splited fasta by selected chromosome : {0} ==> {1}'.format(chr_id, refchr_fa_fn)
     #
+    print 'bismark building...'
+    bismark_dir = do_bismark_genome_preparation(refchr_fa_fn, args.home)
+    print 'bismark <genome_folder> : {0}'.format(bismark_dir)
+    #
+    print 'find CpG site...'
     cg_site_dic = cg_site_finder(ref_fa_split_dic, args.home, 'anno_CpG')
     for chr_id, cg_site_fn in cg_site_dic.iteritems():
-        print 'find cgsite : {0} ==> {1}'.format(chr_id, cg_site_fn)
+        print 'CpG site : {0} ==> {1}'.format(chr_id, cg_site_fn)
     cg_stats_dic = cg_site_stats(cg_site_dic, refchr_len_fn, 100000)
     for chr_id, cg_stats_fn in cg_stats_dic.iteritems():
-        print 'cgsite distribution : {0} ==> {1}'.format(chr_id, cg_stats_fn)
+        print 'CpG distribution : {0} ==> {1}'.format(chr_id, cg_stats_fn)
     #
     ##### Gene coordinate prepraration #####
     # CpG islands
+    print 'annotation CpG islands... (CGI)'
     anno_cgi = ANNO_CGI(ref_fa_split_dic, refchr_len_fn, args.home, 'anno_CGI')
     anno_cgi.do_newcpgreport()
-    anno_cgi.filter_cgi()
-    anno_cgi.extract_around_cgi('Nshore', anno_cgi.cgi_dic['CGI'], '-2000')
-    anno_cgi.extract_around_cgi('Nshelf', anno_cgi.cgi_dic['Nshore'], '-2000')
-    anno_cgi.extract_around_cgi('Sshore', anno_cgi.cgi_dic['CGI'], '2000')
-    anno_cgi.extract_around_cgi('Sshelf', anno_cgi.cgi_dic['Sshore'], '2000')
-    for cgi_type, _dic in anno_cgi.cgi_dic.iteritems():
-        for chr_id, cgi_fn in _dic.iteritems():
-            print 'find CpG island : {0} ==> {1},{2}'.format(cgi_type, chr_id, cgi_fn)
+    anno_cgi.filter_cgi() # always re-run
+    for chr_id, fn in anno_cgi.cgi_dic['CGI'].iteritems():
+        print 'CGI : {0} ==> {1}'.format(chr_id, fn)
     #
-    anno_cgi.stats('CGI')
+    print 'annotation around CpG islands... (Nshore, Nshelf, Sshore, Sshelf)'
+    anno_cgi.extract_around_cgi('Nshore', anno_cgi.cgi_dic['CGI'], '-2000') # always re-run
+    anno_cgi.extract_around_cgi('Nshelf', anno_cgi.cgi_dic['Nshore'], '-2000') # always re-run
+    anno_cgi.extract_around_cgi('Sshore', anno_cgi.cgi_dic['CGI'], '2000') # always re-run
+    anno_cgi.extract_around_cgi('Sshelf', anno_cgi.cgi_dic['Sshore'], '2000') # always re-run
+    #
+    for chr_id, fn in anno_cgi.cgi_dic['Nshore'].iteritems():
+        print 'Nshore : {0} ==> {1}'.format(chr_id, fn)
+    for chr_id, fn in anno_cgi.cgi_dic['Nshelf'].iteritems():
+        print 'Nshelf : {0} ==> {1}'.format(chr_id, fn)
+    for chr_id, fn in anno_cgi.cgi_dic['Sshore'].iteritems():
+        print 'Sshore : {0} ==> {1}'.format(chr_id, fn)
+    for chr_id, fn in anno_cgi.cgi_dic['Sshelf'].iteritems():
+        print 'Sshelf : {0} ==> {1}'.format(chr_id, fn)
+    #
+    cgi_stats_dic = anno_cgi.stats('CGI') # always re-run
+    print 'Stats of CpG island : {0}'.format(cgi_stats_dic['len'])
+    print 'Stats of CpG island : {0}'.format(cgi_stats_dic['GC'])
+    print 'Stats of CpG island : {0}'.format(cgi_stats_dic['obs/exp'])
     # promoters, HCP, ICP, LCP
+    print 'annotation promoter region...'
     anno_promt = ANNO_PROMOTER(args.gtf, ref_fa_split_dic, chrs, refchr_len_fn, args.home, 'anno_Promoter')
-    promt_bed_dic = anno_promt.extract_promt()
+    print 'extract promoter region...'
+    promt_bed_dic = anno_promt.extract_promt() # always re-run
     for chr_id, promt_bed_fn in promt_bed_dic.iteritems():
         print 'Promoter region : {0} ==> {1}'.format(chr_id, promt_bed_fn)
+    #
+    print 'extract promoter sequence...'
     promt_fa_dic = anno_promt.extract_seq(promt_bed_dic, 'promoter')
+    #
+    print 'classify promoter region...'
     promt_cls_dic = anno_promt.classify_promt(promt_fa_dic)
     for chr_id, _type_dic in promt_cls_dic.iteritems():
         for _type, cls_fn in _type_dic.iteritems():
             print 'classification Promoter CpG : {0} ==> {1}, {2}'.format(chr_id, _type, cls_fn)
-    promt_stats_fn = anno_promt.stats(promt_cls_dic)
+    #
+    print 'stats promoter region...'
+    promt_stats_fn = anno_promt.stats(promt_cls_dic) # always re-run
     print 'Stats of classification Promoter CpG : {0}'.format(promt_stats_fn)
-    # Interesting Genomic Resion
+    #
+    # Interesting Genomic Region
+    print 'annotation genomic region...'
     anno_gr = ANNO_GENOMIC_RESION(args.gtf, chrs, refchr_len_fn, args.home, 'anno_GenomicRegion')
     for gr_type, _dic in anno_gr.gr_bed_dic.iteritems():
         for chr_id, gr_fn in _dic.iteritems():
             print 'Genomic region : {0} ==> {1}, {2}'.format(gr_type, chr_id, gr_fn)
     #
     ##### Merge Annotations #####
-
-
-
-
-
-
-
-
-
+    print 'merge annotations...'
+    anno_merge = ANNO_MERGE(cg_site_dic, anno_cgi.cgi_dic, promt_bed_dic, promt_cls_dic, anno_gr.gr_bed_dic, args.home, 'anno_Merge')
+    for chr_id, annoTable_fn in anno_merge.annoTable_dic.iteritems():
+        print chr_id, annoTable_fn
+    #
+    ##### Configure MINE refs.json ####
+    conf_obj = CONF_MAKER(args,
+                          refchr_len_fn,
+                          bismark_dir,
+                          cg_stats_dic,
+                          cgi_stats_dic,
+                          promt_stats_fn,
+                          anno_merge.annoTable_dic)
+    print conf_obj.conf_fn
+    print '#DONE'
 
 if __name__=='__main__':
     import argparse
@@ -826,5 +1172,11 @@ if __name__=='__main__':
             default='Chlorocebus_sabaeus.ChlSab1.1.93.gtf')
     parser.add_argument('-n', '--name',
             default='C_sabaeus_ENS93')
+    #
+    parser.add_argument('--species-name', default='Chlorocebus sabaeus', help='Chlorocebus sabaeus (green monkey)')
+    parser.add_argument('--species-alias', default='ChlSab1.1', help='ChlSab1.1')
+    parser.add_argument('--assembly-accession', default='GCA_000409795.2', help='NCBI(GeneBank):GCA_000409795.2')
+    parser.add_argument('--geneset-version', default='Ensembl 93', help='Ensembl 93')
     args = parser.parse_args()
     main(args)
+

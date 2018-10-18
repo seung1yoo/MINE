@@ -45,6 +45,9 @@ class Do_filter_fastq:
     def make_cmds(self, app, input_dic):
         cmds = list()
         for sam_num, f_type_dic in input_dic.iteritems():
+            if os.path.exists(os.path.join(self.outdir,'{0}_1.clean.fq.gz'.format(sam_num))) and \
+               os.path.exists(os.path.join(self.outdir,'{0}_2.clean.fq.gz'.format(sam_num))):
+                continue
             opts = list()
             opts.append(app.exe)
             opts.append('0.1')
