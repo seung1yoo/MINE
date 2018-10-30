@@ -7,8 +7,213 @@ from lib.Qsub import *
 from lib.Tools import *
 from subprocess import Popen, PIPE
 
+class Do_metilene_anno:
+    def __init__(self, name, mine, eco):
+        # For debugging
+        mine.logger.debug(dir(mine))
+        eco.logger.debug(dir(eco))
 
-class Do_metilene_parse:
+        # inheritance
+        self.name = name
+        self.mine = mine
+        self.eco = eco
+
+        # variable setting
+        self.app_bedtools = App(self.mine.tools, "BEDTOOLS")
+        #
+        self.input_dic = self.select_input()
+        self.outdir = os.path.join(self.eco.room['analysis'], 'do_metilene')
+        self.eco.make_dir(self.outdir)
+        #
+        self.dmr_tags = ['CHR','START','END','q','diff','n.CpG',
+                         'p.MWU','p.2D_KS','mean.G1','mean.G2']
+        self.anno_tags = ['UP1K','genebody','DW1K',
+                          '5UTR','CDS','EXON','3UTR',
+                          'Promoter','HCP','ICP','LCP',
+                          'Nshelf','Nshore','CGI','Sshore','Sshelf']
+        self.anno_fn_dic = dict()
+        self.init_anno_fn_dic()
+
+        # check_stats & run
+        if not self.eco.check_stats(self.name):
+            cmds = self.make_cmds_intersect()
+            RunQsub(cmds, self.app_bedtools.que, '5',
+                    self.eco.room['logs'],
+                    self.eco.room['scripts'],
+                    self.name)
+        else:
+            pass
+        dmr_anno_fn_dic = self.annotation()
+        self.update_ecosystem(dmr_anno_fn_dic)
+
+        # finising
+        self.eco.sync_ecosystem()
+        self.eco.add_stats(self.name)
+
+    def update_ecosystem(self, dmr_anno_fn_dic):
+        for dmr_num, dmr_anno_fn in dmr_anno_fn_dic.iteritems():
+            lvs = [self.name, dmr_num, 'dmr_anno', dmr_anno_fn]
+            self.eco.add_to_ecosystem(lvs)
+
+    def annotation(self):
+        dmr_anno_fn_dic = dict()
+        for dmr_num, f_type_dic in self.input_dic.iteritems():
+            #
+            out_fn = '{0}.anno'.format(f_type_dic['denovo'])
+            dmr_anno_fn_dic.setdefault(dmr_num, out_fn)
+            if os.path.exists(out_fn) and os.path.getsize(out_fn) > 1000:
+                continue
+            #
+            dmr_dic = dict()
+            for line in open(f_type_dic['denovo']):
+                items = line.rstrip('\n').split('\t')
+                if items[0] in ['#CHR']:
+                    idx_dic = dict()
+                    for idx, item in enumerate(items):
+                        idx_dic.setdefault(item, idx)
+                    continue
+                key = self.annotation_key(items)
+                # depend on self.dmr_tags
+                dmr_dic.setdefault(key,{}).setdefault('CHR',items[idx_dic['#CHR']])
+                dmr_dic.setdefault(key,{}).setdefault('START',items[idx_dic['START']])
+                dmr_dic.setdefault(key,{}).setdefault('END',items[idx_dic['STOP']])
+                dmr_dic.setdefault(key,{}).setdefault('q',items[idx_dic['q-value']])
+                dmr_dic.setdefault(key,{}).setdefault('diff',
+                        self.p_to_m_to_p(items[idx_dic['mean_methylation_difference']]))
+                dmr_dic.setdefault(key,{}).setdefault('n.CpG',items[idx_dic['No.CpGs']])
+                dmr_dic.setdefault(key,{}).setdefault('p.MWU',items[idx_dic['p(MWU)']])
+                dmr_dic.setdefault(key,{}).setdefault('p.2D_KS',
+                        items[idx_dic['p(2D_KS)']])
+                dmr_dic.setdefault(key,{}).setdefault('mean.G1',
+                        items[idx_dic['mean_{0}:G1'.format(dmr_num)]])
+                dmr_dic.setdefault(key,{}).setdefault('mean.G2',
+                        items[idx_dic['mean_{0}:G2'.format(dmr_num)]])
+                for anno_tag in self.anno_tags:
+                    dmr_dic.setdefault(key,{}).setdefault(anno_tag,{})
+            #
+            for _chr, anno_fn in self.anno_fn_dic[dmr_num].iteritems():
+                idx_dic = dict()
+                a_headers = self.grep_a_headers(dmr_num)
+                b_headers = self.grep_b_headers(_chr)
+                headers = a_headers
+                headers.extend(b_headers)
+                for idx, header in enumerate(headers):
+                    idx_dic.setdefault(header, idx)
+                #
+                for line in open(anno_fn):
+                    items = line.rstrip('\n').split('\t')
+                    key = self.annotation_key(items)
+                    #
+                    for anno_tag in self.anno_tags:
+                        anno_key = 'MEMBER.{0}'.format(anno_tag)
+                        anno_units = items[idx_dic[anno_key]].split(',')
+                        for unit in anno_units:
+                            if not unit in ['-']:
+                                dmr_dic[key][anno_tag].setdefault(unit,None)
+                            else:
+                                pass
+                        #
+                    #
+                #
+            out = open(out_fn, 'w')
+            out_headers = list()
+            out_headers.append('DMR_ID')
+            out_headers.extend(self.dmr_tags)
+            out_headers.extend(['DMR.YN.{0}'.format(self.mine.dmr_cut),'DMR.UPDOWN'])
+            out_headers.extend(['NUM.{0}'.format(x) for x in self.anno_tags])
+            out_headers.extend(['MEMBER.{0}'.format(x) for x in self.anno_tags])
+            out.write('#{0}\n'.format('\t'.join(out_headers)))
+            dmr_count = 0
+            for key, info_dic in sorted(dmr_dic.iteritems()):
+                dmr_count += 1
+                new_items = list()
+                new_items.append('{0}N{1:0>5}'.format(dmr_num, dmr_count))
+                for tag in self.dmr_tags:
+                    new_items.append(info_dic[tag])
+                new_items.append(self.dmr_yes_or_no(info_dic))
+                new_items.append(self.dmr_up_or_down(info_dic))
+                for tag in self.anno_tags:
+                    new_items.append(str(len(info_dic[tag].keys())))
+                for tag in self.anno_tags:
+                    new_items.append(','.join(info_dic[tag].keys()))
+                out.write('{0}\n'.format('\t'.join(new_items)))
+            out.close()
+        return dmr_anno_fn_dic
+
+    def dmr_yes_or_no(self, info_dic):
+        test, cut = self.mine.dmr_cut.split(':')
+        if test in ['P']:
+            value = info_dic['p.MWU']
+        elif test in ['Q']:
+            value = info_dic['q']
+        #
+        if float(value) <= float(cut):
+            return 'Y'
+        else:
+            return 'N'
+
+    def dmr_up_or_down(self, info_dic):
+        diff_value = info_dic['diff']
+        if float(diff_value) > 0:
+            return 'UP'
+        elif float(diff_value) < 0:
+            return 'DOWN'
+        else:
+            return 'FLAT'
+
+    def p_to_m_to_p(self, value):
+        return str(float(value) * -1)
+
+    def annotation_key(self, items):
+        return '_'.join(items[:3])
+
+    def grep_a_headers(self, dmr_num):
+        fn = self.input_dic[dmr_num]['denovo']
+        fh = open(fn)
+        return fh.readline().rstrip('\n').split('\t')
+
+    def grep_b_headers(self, _chr):
+        fn = self.mine.refs['CGSITE_ANNO'][_chr]
+        fh = open(fn.replace('[HOME]',self.mine.refs['HOME']))
+        return fh.readline().rstrip('\n').split('\t')
+
+    def make_cmds_intersect(self):
+        cmds = list()
+        for dmr_num, f_type_dic in self.input_dic.iteritems():
+            opts = list()
+            for _chr, _f_path in self.mine.refs['CGSITE_ANNO'].iteritems():
+                out_fn = self.intersect_out_fn(f_type_dic, _chr)
+                if os.path.exists(out_fn):
+                    continue
+                opts.append(self.app_bedtools.exe)
+                opts.append('intersect')
+                opts.append('-a')
+                opts.append(f_type_dic['denovo'])
+                opts.append('-b')
+                opts.append(_f_path.replace('[HOME]', self.mine.refs['HOME']))
+                opts.append('-wa')
+                opts.append('-wb')
+                opts.append('>')
+                opts.append(out_fn)
+                opts.append('\n')
+            cmds.append(' '.join(opts))
+        return cmds
+
+    def intersect_out_fn(self, f_type_dic, _chr):
+        return os.path.join('{0}.{1}.anno'.format(f_type_dic['denovo'], _chr))
+
+    def init_anno_fn_dic(self):
+        for dmr_num, f_type_dic in self.input_dic.iteritems():
+            for _chr, _f_path in self.mine.refs['CGSITE_ANNO'].iteritems():
+                out_fn = self.intersect_out_fn(f_type_dic, _chr)
+                self.anno_fn_dic.setdefault(dmr_num,{}).setdefault(_chr,out_fn)
+
+    def select_input(self):
+        input_dic = dict()
+        input_dic = self.eco.eco_dic['do_metilene_exe']
+        return input_dic
+
+class _Do_metilene_parse:
     def __init__(self, name, mine, eco):
         # For debugging
         mine.logger.debug(dir(mine))
@@ -30,7 +235,7 @@ class Do_metilene_parse:
         if not self.eco.check_stats(self.name):
             #
             cmds = self.make_cmds_parse(app, self.input_dic, '0.05')
-            RunQsub(cmds, app.que, '1',
+            RunQsub(cmds, app.que, '10',
                     self.eco.room['logs'],
                     self.eco.room['scripts'],
                     self.name)
@@ -190,7 +395,7 @@ class Do_metilene_prepare:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             cmds = self.make_cmds(app_metilene, app_bedtools, self.input_dic)
-            RunQsub(cmds, app_bedtools.que, '1',
+            RunQsub(cmds, app_bedtools.que, '10',
                     self.eco.room['logs'],
                     self.eco.room['scripts'],
                     self.name)

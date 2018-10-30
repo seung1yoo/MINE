@@ -17,6 +17,7 @@ from do_filter_fastq import *
 from do_bismark import *
 from do_target_check import *
 from do_metilene import *
+from do_report import *
 #
 #from do_metilene_input import *
 #from do_metilene_parse import *
@@ -58,6 +59,7 @@ class Mine:
         self.sample_dic = dict()
         self.dmr_dic = dict()
         self.targetbed = None
+        self.dmr_cut = None
         for line in open(self.config_fn):
             items = line.rstrip('\n').split()
             if items[0].startswith('#'):
@@ -92,6 +94,8 @@ class Mine:
                 #
                 self.dmr_dic.setdefault(num, {}).setdefault('G1', group1s)
                 self.dmr_dic.setdefault(num, {}).setdefault('G2', group2s)
+            elif items[0] in ['CUTOFF']:
+                self.dmr_cut = items[1]
             elif items[0] in ['TARGET']:
                 if items[1] in ['ON']:
                     self.targetbed = items[2]
@@ -139,7 +143,18 @@ class Mine:
 
     def add_refs(self, refs_fn):
         self.refs = json.load(open(refs_fn))[self.species]
-        self.refs['BISMARK_DIR'] = self.refs['BISMARK_DIR'].replace('[HOME]', self.refs['HOME'])
+        self.refs['BISMARK_DIR'] = self.refs['BISMARK_DIR'].replace(
+                '[HOME]', self.refs['HOME'])
+        self.refs['CHR_LEN_FN'] = self.refs['CHR_LEN_FN'].replace(
+                '[HOME]', self.refs['HOME'])
+        self.refs['CGI_GC_PNG'] = self.refs['CGI_GC_PNG'].replace(
+                '[HOME]', self.refs['HOME'])
+        self.refs['CGI_LEN_PNG'] = self.refs['CGI_LEN_PNG'].replace(
+                '[HOME]', self.refs['HOME'])
+        self.refs['CGI_OBSEXP_PNG'] = self.refs['CGI_OBSEXP_PNG'].replace(
+                '[HOME]', self.refs['HOME'])
+        self.refs['PROMTER_STATS_FN'] = self.refs['PROMTER_STATS_FN'].replace(
+                '[HOME]', self.refs['HOME'])
 
 class Eco(Mine):
     def __init__(self):
@@ -181,7 +196,7 @@ class Eco(Mine):
         except:
             self.logger.error('add_to_ecosystem input error : {0}'.format(lvs))
             sys.exit()
-        if os.path.exists(lv4):
+        if os.path.exists(lv4) and os.path.getsize(lv4) > 300:
             self.eco_dic.setdefault(lv1, {})
             self.eco_dic[lv1].setdefault(lv2, {})
             self.eco_dic[lv1][lv2].setdefault(lv3, lv4)
@@ -273,14 +288,11 @@ def main(mode, config, tools_fn, refs_fn):
         #
         pipes.append('do_metilene_prepare')
         pipes.append('do_metilene_exe')
-        pipes.append('do_metilene_parse')
+        pipes.append('do_metilene_anno')
         #
-        ## Report
-        #
-        #pipes.append('report_stat_fastq_raw')
-        #pipes.append('report_fastqc_raw')
-        #pipes.append('report_stat_fastq_clean')
-        #pipes.append('report_fastqc_clean')
+        pipes.append('report_ref')
+        pipes.append('report_sample')
+        pipes.append('report_dmr')
         #
     #
     for idx, pipe in enumerate(pipes):
@@ -292,12 +304,14 @@ def main(mode, config, tools_fn, refs_fn):
             Do_fastqc(pipe, mine, eco)
         elif pipe in ['do_stat_fastq_raw']:
             Do_stat_fastq(pipe, mine, eco)
+
         elif pipe in ['do_filter_fastq']:
             Do_filter_fastq(pipe, mine, eco)
         elif pipe in ['do_fastqc_clean']:
             Do_fastqc(pipe, mine, eco)
         elif pipe in ['do_stat_fastq_clean']:
             Do_stat_fastq(pipe, mine, eco)
+
         elif pipe in ['do_bismark_map']:
             Do_bismark_map(pipe, mine, eco)
         elif pipe in ['do_bismark_dedup']:
@@ -308,6 +322,7 @@ def main(mode, config, tools_fn, refs_fn):
             Do_bismark_nucl(pipe, mine, eco)
         elif pipe in ['do_bismark_report']:
             Do_bismark_report(pipe, mine, eco)
+
         elif pipe in ['do_targetcheck_sort']:
             Do_targetcheck_sort(pipe, mine, eco)
         elif pipe in ['do_targetcheck_grep']:
@@ -317,8 +332,15 @@ def main(mode, config, tools_fn, refs_fn):
             Do_metilene_prepare(pipe, mine, eco)
         elif pipe in ['do_metilene_exe']:
             Do_metilene_exe(pipe, mine, eco)
-        elif pipe in ['do_metilene_parse']:
-            Do_metilene_parse(pipe, mine, eco)
+        elif pipe in ['do_metilene_anno']:
+            Do_metilene_anno(pipe, mine, eco)
+
+        elif pipe in ['report_ref']:
+            Do_report_ref(pipe, mine, eco)
+        elif pipe in ['report_sample']:
+            Do_report_sample(pipe, mine, eco)
+        elif pipe in ['report_dmr']:
+            Do_report_dmr(pipe, mine, eco)
         else:
             mine.logger.error('Unknown PIPE ==> {0:0>4}:{1}'.format(str(idx),pipe))
             sys.exit()

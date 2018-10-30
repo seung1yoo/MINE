@@ -858,6 +858,14 @@ class ANNO_MERGE:
         #
         self.anno_cpg()
         #
+        self.merge_annoTable()
+
+    def merge_annoTable(self):
+        annoTable_fn = os.path.join(self.out_dir, 'all.annoTable')
+        self.annoTable_dic.setdefault('all', annoTable_fn)
+        if os.path.exists(annoTable_fn):
+            continue
+
 
     def anno_cpg(self):
         #### pair list-up
@@ -930,7 +938,10 @@ class ANNO_MERGE:
                     _count += len(anno_dic[s_pos][region])
                     new_items.append(str(len(anno_dic[s_pos][region])))
                 for region in regions:
-                    new_items.append(','.join((anno_dic[s_pos][region])))
+                    if anno_dic[s_pos][region]:
+                        new_items.append(','.join((anno_dic[s_pos][region])))
+                    else:
+                        new_items.append('-')
                 #
                 if not _count in [0]:
                     out.write('{0}\n'.format('\t'.join(new_items)))

@@ -29,7 +29,7 @@ class Do_targetcheck_sort:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             cmds = self.make_cmds(app_bedtools, self.input_dic)
-            RunQsub(cmds, app_bedtools.que, '1',
+            RunQsub(cmds, app_bedtools.que, '10',
                     self.eco.room['logs'],
                     self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
@@ -51,8 +51,8 @@ class Do_targetcheck_sort:
         cmds = list()
         for sam_num, f_type_dic in input_dic.iteritems():
             out_fn = self.make_out_fn(sam_num)
-            if os.path.exists(out_fn):
-                eco.logger.info('Found pre-run : {0}'.format(out_fn))
+            if os.path.exists(out_fn) and os.path.getsize(out_fn) > 1000:
+                self.eco.logger.info('Found pre-run : {0}'.format(out_fn))
                 continue
             opts = list()
             opts.append(app_bedtools.exe)
@@ -105,7 +105,7 @@ class Do_targetcheck_grep:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             cmds = self.make_cmds(app_bedtools, self.input_dic)
-            RunQsub(cmds, app_bedtools.que, '1',
+            RunQsub(cmds, app_bedtools.que, '10',
                     self.eco.room['logs'],
                     self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
@@ -127,8 +127,8 @@ class Do_targetcheck_grep:
         cmds = list()
         for sam_num, f_type_dic in input_dic.iteritems():
             out_fn = self.make_out_fn(sam_num)
-            if os.path.exists(out_fn):
-                eco.logger.info('Found pre-run : {0}'.format(out_fn))
+            if os.path.exists(out_fn) and os.path.getsize(out_fn) > 1000:
+                self.eco.logger.info('Found pre-run : {0}'.format(out_fn))
                 continue
             #
             if self.mine.targetbed:

@@ -34,7 +34,10 @@ class Do_stat_fastq:
     def update_ecosystem(self, input_dic):
         for sam_num, f_type_dic in input_dic.iteritems():
             stat_fn = '{0}.stat'.format(f_type_dic['1.fq.gz'])
-            self.eco.add_to_ecosystem([self.name,sam_num,'all.stat',stat_fn])
+            if self.name in ['do_stat_fastq_raw']:
+                self.eco.add_to_ecosystem([self.name,sam_num,'raw.stat',stat_fn])
+            elif self.name in ['do_stat_fastq_clean']:
+                self.eco.add_to_ecosystem([self.name,sam_num,'clean.stat',stat_fn])
 
     def make_cmds(self, app, input_dic):
         cmds = list()
