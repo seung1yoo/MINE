@@ -196,7 +196,7 @@ class Eco(Mine):
         except:
             self.logger.error('add_to_ecosystem input error : {0}'.format(lvs))
             sys.exit()
-        if os.path.exists(lv4) and os.path.getsize(lv4) > 300:
+        if os.path.exists(lv4) and os.path.getsize(lv4) > 100:
             self.eco_dic.setdefault(lv1, {})
             self.eco_dic[lv1].setdefault(lv2, {})
             self.eco_dic[lv1][lv2].setdefault(lv3, lv4)

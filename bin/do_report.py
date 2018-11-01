@@ -340,25 +340,136 @@ class Do_report_dmr:
                                   'DMR_CUTOFF',
                                   'N_CANDIDATE','N_DMR','N_DMR_UP','N_DMR_DOWN']
         self.dmr_stat_fn = os.path.join(self.outdir, 'DMR_Stat.xls')
+        #
+        self.dmr_tags = ['CHR','START','END','q','diff','n.CpG',
+                         'p.MWU','p.2D_KS','mean.G1','mean.G2',
+                         'DMR.YN.{0}'.format(self.mine.dmr_cut),
+                         'DMR.UPDOWN']
+        self.anno_tags = ['UP1K','genebody','DW1K',
+                          '5UTR','CDS','EXON','3UTR',
+                          'Promoter','HCP','ICP','LCP',
+                          'Nshelf','Nshore','CGI','Sshore','Sshelf']
+        #
+        econames = ['do_metilene_anno']
+        input_dic = self.select_input(econames)
 
         # check_stats & run
         if not self.eco.check_stats(self.name):
-            econames = ['do_metilene_anno']
-            input_dic = self.select_input(econames)
-            self.copy_to_report(input_dic)
+            dmr_rpt_dic = self.copy_to_report(input_dic)
             self.cmd_stat_dic = self.cal_dmr_stat(input_dic)
             self.write_dmr_stat()
+            #
+            anno2dmr_f_dic = self.convert_gene_to_dmr(dmr_rpt_dic)
         else:
+            dmr_rpt_dic = self.dmr2anno_dic_maker(input_dic)
+            anno2dmr_f_dic = self.anno2dmr_dic_maker(dmr_rpt_dic)
             pass
 
         # finising
-        self.update_ecosystem()
+        self.update_ecosystem(dmr_rpt_dic, anno2dmr_f_dic)
         self.eco.sync_ecosystem()
         self.eco.add_stats(self.name)
 
-    def update_ecosystem(self):
+    def update_ecosystem(self, dmr_rpt_dic, anno2dmr_f_dic):
         lvs = [self.name, 'all', 'stat.dmr', self.dmr_stat_fn]
         self.eco.add_to_ecosystem(lvs)
+        #
+        for dmr_num, dmr_rpt_fn in dmr_rpt_dic.iteritems():
+            lvs = [self.name, dmr_num, 'dmr2anno', dmr_rpt_fn]
+            self.eco.add_to_ecosystem(lvs)
+        for dmr_num, anno2dmr_fn in anno2dmr_f_dic.iteritems():
+            lvs = [self.name, dmr_num, 'anno2dmr', anno2dmr_fn]
+            self.eco.add_to_ecosystem(lvs)
+        #
+    
+    def anno2dmr_dic_maker(self, dmr_rpt_dic):
+        anno2dmr_f_dic = dict()
+        for dmr_num, dmr_rpt_fn in dmr_rpt_dic.iteritems():
+            gene2dmr_fn = dmr_rpt_fn.replace('.xls','.anno2dmr.xls')
+            anno2dmr_f_dic.setdefault(dmr_num, gene2dmr_fn)
+        return anno2dmr_f_dic
+
+    def dmr2anno_dic_maker(self, input_dic):
+        dmr_rpt_dic = dict()
+        for dmr_num, f_type_dic in input_dic.iteritems():
+            dmr_dst_fn = self.make_dmr_report_fn(dmr_num)
+            dmr_rpt_dic.setdefault(dmr_num, dmr_dst_fn)
+        return dmr_rpt_dic
+
+    def convert_gene_to_dmr(self, dmr_rpt_dic):
+        anno2dmr_f_dic = dict()
+        for dmr_num, dmr_rpt_fn in dmr_rpt_dic.iteritems():
+            gene2dmr_dic, dmrInfo_dic = self.gene2dmr_converter(dmr_rpt_fn)
+            #
+            gene2dmr_fn = dmr_rpt_fn.replace('.xls','.anno2dmr.xls')
+            anno2dmr_f_dic.setdefault(dmr_num, gene2dmr_fn)
+            #
+            out = open(gene2dmr_fn,'w')
+            out_headers = ['#ANNO_TAG','ANNO_ID','ANNO_CHR','ANNO_START','ANNO_END','DMR_ID']
+            out_headers.extend(self.dmr_tags)
+            out.write('{0}\n'.format('\t'.join(out_headers)))
+            for anno_tag, anno_id_dic in gene2dmr_dic.iteritems():
+                for anno_id, info_dic in anno_id_dic.iteritems():
+                    anno_items = [anno_tag, anno_id]
+                    anno_items.append(info_dic['chr'])
+                    anno_items.append(info_dic['start'])
+                    anno_items.append(info_dic['end'])
+                    for dmr_id in info_dic['dmrs']:
+                        dmr_items = [dmr_id]
+                        for dmr_tag in self.dmr_tags:
+                            dmr_items.append(dmrInfo_dic[dmr_id][dmr_tag])
+                        out.write('{0}\t{1}\n'.format('\t'.join(anno_items), '\t'.join(dmr_items)))
+                        #
+                    #
+                #
+            out.close()
+        return anno2dmr_f_dic
+    
+    def gene2dmr_converter(self, dmr_rpt_fn):
+        gene2dmr_dic = dict()
+        dmrInfo_dic = dict()
+        for line in open(dmr_rpt_fn):
+            items = line.rstrip('\n').split('\t')
+            if items[0] in ['#DMR_ID']:
+                idx_dic = dict()
+                for idx, item in enumerate(items):
+                    idx_dic.setdefault(item, idx)
+                continue
+            #
+            yn = items[idx_dic['DMR.YN.{0}'.format(self.mine.dmr_cut)]]
+            if yn in ['N']:
+                continue
+            #
+            dmr_id = items[idx_dic['#DMR_ID']]
+            #
+            for anno_tag in self.anno_tags:
+                members = items[idx_dic['MEMBER.{0}'.format(anno_tag)]].split(',')
+                for member in members:
+                    if not member:
+                        continue
+                    (_chr, _start, _end, _anno_tag, _id) = self.member_parser(member, anno_tag)
+                    gene2dmr_dic.setdefault(anno_tag, {}).setdefault(_id, {}).setdefault('chr',_chr)
+                    gene2dmr_dic.setdefault(anno_tag, {}).setdefault(_id, {}).setdefault('start',_start)
+                    gene2dmr_dic.setdefault(anno_tag, {}).setdefault(_id, {}).setdefault('end',_end)
+                    gene2dmr_dic.setdefault(anno_tag, {}).setdefault(_id, {}).setdefault('dmrs',{}).setdefault(dmr_id,None)
+            #
+            for dmr_tag in self.dmr_tags:
+                dmrInfo_dic.setdefault(dmr_id, {}).setdefault(dmr_tag, items[idx_dic[dmr_tag]])
+            #
+        return gene2dmr_dic, dmrInfo_dic
+
+    def member_parser(self, member, mode):
+        if mode in ['CGI']:
+            _chr, _start, _end, _anno_tag, __id = member.split('_')
+            _id = __id.split('|')[0]
+        else:
+            _chr, _start, _end, _anno_tag, _id = member.split('_')
+        return _chr, _start, _end, _anno_tag, _id
+
+
+
+
+
 
     def write_dmr_stat(self):
         out = open(self.dmr_stat_fn,'w')
@@ -449,13 +560,16 @@ class Do_report_dmr:
 
 
     def copy_to_report(self, input_dic):
+        dmr_rpt_dic = dict()
         for dmr_num, f_type_dic in input_dic.iteritems():
             dmr_src_fn = f_type_dic['dmr_anno']
             dmr_dst_fn = self.make_dmr_report_fn(dmr_num)
+            dmr_rpt_dic.setdefault(dmr_num, dmr_dst_fn)
             if not os.path.exists(dmr_dst_fn):
-                shutil.copyfile(dmr_src_fn, dmr_dst_path)
+                shutil.copyfile(dmr_src_fn, dmr_dst_fn)
             else:
                 pass
+        return dmr_rpt_dic
 
     def make_dmr_report_fn(self, dmr_num):
         g1_sam_s = self.mine.dmr_dic[dmr_num]['G1']
