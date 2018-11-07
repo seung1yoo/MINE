@@ -665,6 +665,23 @@ class Do_report_ref:
 
     def write_ref_info_f(self):
         out = open(self.ref_info_fn,'w')
+        out.write('{0}\n'.format('='.join(['SPECEIS_ID',self.mine.species])))
+        out.write('{0}\n'.format('='.join(['SPECIES_NAME',self.mine.refs['SPECIES_NAME']])))
+        out.write('{0}\n'.format('='.join(['SPECIES_ALIAS',self.mine.refs['SPECIES_ALIAS']])))
+        out.write('{0}\n'.format('='.join(['ASSEMBLY_ACC',self.mine.refs['ASSEMBLY_ACC']])))
+        out.write('{0}\n'.format('='.join(['GENESET_VER',self.mine.refs['GENESET_VER']])))
+        out.write('\n')
+        #
+        for line in open(self.mine.refs['CHR_LEN_FN']):
+            items = line.rstrip('\n').split('\t')
+            _id = items[0]
+            _len = int(items[1])
+            out.write('{0}\n'.format('='.join(['CHR_LEN:{0}'.format(_id),'{0:,}'.format(_len)])))
+        #
+        out.close()
+
+    def _write_ref_info_f(self):
+        out = open(self.ref_info_fn,'w')
         #
         out.write('\n')
         out.write('{0}\n'.format('#'*50))
@@ -685,7 +702,7 @@ class Do_report_ref:
             items = line.rstrip('\n').split('\t')
             _id = items[0]
             _len = int(items[1])
-            out.write('{0}\n'.format('='.join(['CHR_LEN','{0}:{1:,}'.format(_id,_len)])))
+            out.write('{0}\n'.format('='.join(['CHR_LEN:{0}'.format(_id),'{0:,}'.format(_len)])))
         #
         out.write('\n')
         out.write('{0}\n'.format('#'*50))
