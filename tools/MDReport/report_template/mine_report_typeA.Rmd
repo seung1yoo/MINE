@@ -1,0 +1,358 @@
+---
+params:
+  dmonth:
+    value: dmonth
+  dday:
+    value: dday
+  project_id:
+    value: project_id
+  data_path:
+    value: data_path
+  species_id:
+    value: species_id
+  species_name:
+    value: species_name
+  species_alias:
+    value: species_alias
+  assembly_acc:
+    value: assembly_acc
+  geneset_ver:
+    value: geneset_ver
+  mine_report_path:
+    value: mine_report_path
+title: "Bisulfite-Seq Analysis Report"
+author: "`r params$project_id`"
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    latex_engine: xelatex
+    df_print: kable
+    highlight: tango
+    fig_caption: yes
+header-includes:
+  - \usepackage{kotex}
+  - \setmainfont{NanumGothic}
+  - \setmainhangulfont{NanumGothic}
+  
+  - \usepackage{graphicx}
+  - \newsavebox{\tbilogo}
+  - \sbox{\tbilogo}{\includegraphics[scale=0.1]{"`r paste(params$mine_report_path,'img','Theragen_logo.eps', sep = '/')`"}}
+  
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  
+  - \setlength{\headheight}{0.2in}
+  - \setlength{\textheight}{9.0in}
+  - \setlength{\voffset}{0.2in}
+  
+  - \fancyhead{}
+  - \fancyhead[LE,LO]{\textsl{\leftmark}}
+  #- \fancyhead[RE,RO]{\usebox{\tbilogo}}
+  - \fancyhead[RE,RO]{`r params$project_id`}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \fancyfoot{}
+  - \fancyfoot[R]{\textbf{\thepage}}
+  - \fancyfoot[L]{\textsl{Copyright©2018 TheragenEtex.}}
+  - \renewcommand{\footrulewidth}{0pt}
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+if (!require(tidyverse)) install.packages("tidyverse")
+if (!require(xtable)) install.packages("xtable")
+if (!require(knitr)) install.packages("knitr")
+if (!require(png)) install.packages("png")
+
+library(tidyverse)
+options(scipen = 999, stringsAsFactors = FALSE)
+library(xtable)
+library(knitr)
+library(png)
+
+```
+
+\newpage
+
+# DNA Methylation
+
+## General Informations
+
+DNA methylation, which most commonly occurs at the C5 position of cytosines within CpG dinucleotides, plays a pivotal role in many biological procedures such as gene expression, embryonic development, cellular proliferation, differentiation, and chromosome stability. Aberrant DNA methylation is often associated with loss of DNA homeostasis and genomic instability leading to the development of human diseases such as cancer. The importance of DNA methylation creates an urgent demand for effective methods with high sensitivity and reliability to explore innovative diagnostic and therapeutic strategies. Bisulfite genomic sequencing developed by Frommer and colleagues was recognized as a revolution in DNA methylation analysis based on conversion of genomic DNA by using sodium bisulfite [^1]
+
+
+This biological process is progressed by which methyl groups are added to DNA. Two of DNA’s four nucleotides, cytosine and adenine, can be methylated. Adenine methylation is restricted to prokaryotes. The rate of cytosine DNA methylation differs strongly between species: 14% of cytosines are methylated in Arabidopsis thaliana, 4% in Mus musculus, 2.3% in Escherichia coli, 0.03% in Drosophila, and virtually none (less than 0.0002%) in yeast species.
+
+
+To understand the molecular mechanisms that govern spcific expression patterns on a global scale, it is important to identify the transcriptional regulatory elements associated with each predicted gene. So, we are focussing to investigate which regions of genome are methylated, especially, inter-intra-genomic region, promoter, CG rich regions, TFBS(Transcription Factor Biding Sites), Enhancer and TE(Transposnal Element).
+
+
+## Interesting Genomic Regions
+
+### Inter-genomic regions
+
+The intergenic regions are parts of the genome that fall between genes. They may eventually be found to have some currently unknown function, or they may not. In this analysis, we considered below regions as inter-genic regions. In order to define genbody genomic region, we employed `r params$geneset_ver` annotation.
+
+  * UP1K: Up stream 1kbp region from start of GENEBODY
+  * GENEBODY: Annotated Transcript region
+  * DW1K: Down stream 1kbp region from end of GENEBODY
+
+### Intra-genomic regions
+
+The intragenic regions are parts of the genes. In this analysis, we considered below regions as intra-genomic regions. In order to identify intra-genomic regions, we employed `r params$geneset_ver` database.
+
+  * 5UTR (UnTranslated Region at 5’): The region of an mRNA that is directly upstream from the initiation codon. This region is important for the regulation of translation of a transcript by differing mechanisms in viruses, prokaryotes and eukaryotes.
+  * CDS (Coding Sequence): Any nucleotide sequence of a gene’s DNA or RNA, composed of exons, that codes for protein. This region is bounded by the 5 prime end by start codon and by the 3 prime end with stop codon.
+  * EXON: Any nucleotide sequence encoded by a gene that remains within the mature RNA product of the gene after introns have been removed by RNA splicing.
+  * 3UTR (UnTranslated Region at 3’): The section of messenger RNA (mRNA) that immediately follows the translation termination codon.
+
+### Promoter Regions
+
+A promoter is a region of DNA that initiates transcription of a particular gene. This promoters are located near the transcription start sites of genes on the same strand and upstream of the DNA (towards the 5’ region of the sense strand) directions. In mammals, methylation is restricted to CpG dinucleotides, which are largely depleted from the genome except at short genomic regions called CpG islands, which commonly represent promoters [^2] . Cytosine methylation can interfere with transcription factor bidnding, the repression seems to occur largely indirectly, via recruitment of metyhyl-CpG binding domain (MBD) proteins that induce chromatin changes. Consequently, the strength of repression could depend on the local concentration of CpGs within the promoter [^3] . So, it is important to classifythe promoters according to CG denseness. In this analysis, we define promoter regions with following conditions considering Weber’s paper.
+
+  * Promoter : -2000bp to +500bp region from start of GENEBODY
+  * HCP: High Cg site Promoter
+  * ICP: Intermediate Cg site Promoter
+  * LCP: Low Cg site Promoter
+
+Weber’s method for promoter classification considering CG density
+
+  - P designates candidate region which contains most of the promoter located -2000bp to +500bp from TSS
+  - Calculate CpG Ratio from 500 bp sliding window with 5bp offset on P region, using below methods
+  - R = (n° of CpG * 500) / (n° of C * n° of G)
+  - Calculate CpG Ratio and GC% contents
+  - Classify promoter as following:
+    - HCP if R more than 0.75 and GC% more than 0.55
+    - ICP if R more than 0.48 and less than 0.75 and GC% more than 0.48 (In this study, ICP is defined as not HCP or LCP)
+    - LCP if R less than 0.48
+
+### CG Rich regions
+
+#### CpG Islands
+
+CpG Islands consist of regions with a high frequency of CpG sites, though objective definitions for CpG islands are limited. The usual formal definition of a CpG island is a region with at least 200 bp, and a GC percentage that is greater than 50%, and with an observed-to-expected CpG ratio that is greater than 60%. [^4] We used newcpgreport [^5] to extract CpG Island candidates.
+
+  * Nshelf (North shelf): -4000bp to -2001bp region from CpG Island
+  * Nshore (North shore): -2000bp to -0bp region from CpG Island
+  * CGI: CpG Island
+  * Sshore (South shore): 0bp to +2000bp region from CpG Island
+  * Sshelf (South shelf): +2001bp to +4000bp region from CpG Island
+
+![Schematic of CpG annotations. (image source : ["annotatr"](https://www.bioconductor.org/packages/release/bioc/vignettes/annotatr/inst/doc/annotatr-vignette.html#cpg-annotations) document)](`r paste(params$mine_report_path, "img","Schematic_of_CpG_annotations.png", sep = '/')`){width=80%}
+
+
+\newpage
+
+# Analysis Method
+
+## Pipeline Descriptions
+
+### Reference Genome Building (for lack of information species)
+
+As mentioned earlier, methylation affects the phenotype. Tinning of methylation positions that can be identified through whole genome bisulfite sequencing is essential. The figure below shows how to annotate the methylation position for species that can not be obtained from public sorce. It is possible to treat all the interesting genomic regions mentioned above.
+
+\newpage
+
+![Reference Genome Building for lack of information species.](`r paste(params$mine_report_path, "img","mine_build_reference_genome.png", sep = '/')`){width=80%}
+
+\newpage
+
+### Metylation Analysis
+
+  1. Filteration : Low quality reads were filtered according to the following criteria; reads contain more than 10% of skipped bases (marked as ‘N’s), reads contain more than 40% of bases whose quality scores are less than 20 and reads of which average quality scores of each read is less than 20. The whole filtering process was performed using the in-house scripts.
+  2. Alignment : Map on to the genome considering Bisulfite conversion. (Bismark)
+  3. Deduplication : Remove duplicated reads (Bismark)
+  4. Cytosine Calling : Perform methylation calling based on cytosine site(CG) using qniquely mapped reads (Bismark)
+  5. Extraction Cytosine Sites on the Targeted Region : Extract cytosine list from captured regions.
+  6. DMR/DMS (Differential Methylated Resions/Sites) : Calls candidate region which shows difference in Methylation rate. (methlene)
+  7. Annotation : Annotate UP1K, 5UTR, CDS, EXON, 3UTR, DW1K, etc.
+  8. Clustering : Clustering based-on annotation to DMR/DMS.
+
+\newpage
+
+![Methylation analysis pipeline.](`r paste(params$mine_report_path, "img","mine_pipeline.png", sep = '/')`){width=80%}
+
+
+\newpage
+
+# Analysis Result
+
+## Reference Genome Annotation
+
+### Basic infos.
+
+```{r ref_info, results='asis', echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+info_ref_fn <- paste(params$data_path, "files", "Info_Reference.txt", sep = "/")
+info_ref_data <- read.table(info_ref_fn, sep = "=", header = F)
+colnames(info_ref_data) <- c("KEY", "VALUE")
+knitr::kable(info_ref_data, caption = "General Informations", align = "c", "pandoc")
+
+```
+
+### Distribution of Genome-wide CG site
+
+```{r cg, result='asis', out.width="100%", fig.align='center'}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+data_path <- paste("/Volumes/TBI_siyoo/TBI_NonHumanTeam/Report-repository", "TBD171053-KRIBB-Monkey-MethylSeq-TestReport-sabaeus-20181031", sep = '/')
+data_dir <- paste(data_path,"files","CG_site_distribution",sep = '/')
+
+#data_dir <- paste(params$data_path,"files","CG_site_distribution",sep = '/')
+for(img_path in Sys.glob(paste(data_dir,"CG.site.dist.*.png",sep = '/'))){
+  img <- readPNG(img_path, native = TRUE)
+  par(mar=c(7,1,7,1))
+  plot(c(0:1), c(0:1), type='n', axes = FALSE, xlab = "", ylab = "", title = "", main = "")
+  rasterImage(img, 0, 0, 1, 1)
+  cat("\n\n")
+}
+
+```
+
+### Distribution of Defined CpG islands
+
+```{r CpG island, result='asis', out.width="70%", fig.align='center'}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+img <- paste(params$data_path, "files", "CpGisland_GCpct_Disribution.png", sep = "/")
+knitr::include_graphics(img)
+cat("\n\n")
+img <- paste(params$data_path, "files", "CpGisland_Length_Disribution.png", sep = "/")
+knitr::include_graphics(img)
+cat("\n\n")
+img <- paste(params$data_path, "files", "CpGisland_ObsExp_Disribution.png", sep = "/")
+knitr::include_graphics(img)
+
+```
+
+### Statistics of Promoter classification
+
+```{r Promoter, results='asis', echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+fn <- paste(params$data_path, "files", "Promoter_Annotation_Stat.xls", sep = "/")
+data <- read.table(fn, header = TRUE)
+knitr::kable(data, caption = "Promoter classification", align = "c", "pandoc")
+
+```
+
+## Samples Stats
+
+### Sequence
+
+```{r Sequence, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+fn <- paste(params$data_path, "samples", "Sample_Stat.xls", sep = "/")
+data <- read.table(fn, header = TRUE)
+data_ext <- data[,c(2,3,4,5)]
+knitr::kable(data_ext, caption = "Sequence Statistics", align = "c", "pandoc")
+
+```
+
+### Alignment
+
+```{r Alignment, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+fn <- paste(params$data_path, "samples", "Sample_Stat.xls", sep = "/")
+data <- read.table(fn, header = TRUE)
+data_ext <- data[,c(2,4,6,8,9)]
+knitr::kable(data_ext, caption = "Alignment Statistics", align = "c", "pandoc")
+
+```
+
+### Methylation level
+
+```{r Methylation, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+fn <- paste(params$data_path, "samples", "Sample_Stat.xls", sep = "/")
+data <- read.table(fn, header = TRUE)
+data_ext <- data[,c(2,10,11,12,13,15)]
+knitr::kable(data_ext, caption = "CpG Methylation Statistics", align = "c", "pandoc")
+
+#data_ext <- data[,c(2,10,13,14)]
+#knitr::kable(data_ext, caption = "CpH Methylation Statistics", align = "c", "pandoc")
+
+#data_ext <- data[,c(2,10,15,16)]
+#knitr::kable(data_ext, caption = "CHH Methylation Statistics", align = "c", "pandoc")
+
+```
+
+## Differentially methylated regions
+
+### Comparison design
+
+```{r DMR_1, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+fn <- paste(params$data_path, "DMR", "DMR_Stat.xls", sep = "/")
+data <- read.table(fn, header = TRUE)
+data_ext <- data[c(order(data[,1])),c(1,2,3,4)]
+knitr::kable(data_ext, caption = "DMR Comparison set", align = "c", "pandoc")
+
+```
+
+### DMR Statistics
+
+```{r DMR_2, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+fn <- paste(params$data_path, "DMR", "DMR_Stat.xls", sep = "/")
+data <- read.table(fn, header = TRUE)
+data_ext <- data[c(order(data[,1])),c(1,5,6,7,8)]
+knitr::kable(data_ext, caption = "DMR Statistics", align = "c", "pandoc")
+
+```
+
+
+\newpage
+
+# Appendix
+
+## Submitted Data in FTP or Disk
+
+### Schema of Result directory
+
+We provide raw-level data that can be obtained by analyzing bisulfite sequencing data. The structure of the data provided is as follows.
+
+- bismark/ : Alignment statistics report files generated by bismark. (html & text files)
+- DMR/ : Within the DMR directory, you can see a list of DMR details identified in each comparison group. You can see the converting table (*.anno2dmr.xls) based on the annotated tags (Gene, CpG island, Promoter, etc.) 
+- files/ : Files related to reference genome annotation.
+- samples/ : Statistical result files related to the sample.
+
+![Directory structure](`r paste(params$mine_report_path, "img","Directory_structure.png", sep = '/')`){width=50%}
+
+\newpage
+
+## BioTools
+
+Only the major analysis tools among the various analysis tools used for bisulfite sequencing analysis.
+
+### BISMARK
+- comment : A tools to map bisulfite converted sequence reads and determine cytosine methylation states.
+- version : 0.19.1
+- citation : Krueger F, Andrews SR. Bismark: a flexible aligner and methylation caller for Bisulfite-Seq applications. Bioinformatics. 2011 27(11):1571-2.
+
+### METILENE
+- comment : Annotate DMRs and DMCs from Methyl-seq data.
+- version : 0.2-7
+- citation : Frank Jühling, Helene Kretzmer, Stephan H. Bernhart, Christian Otto, Peter F. Stadler, and Steve Hoffmann. metilene: Fast and sensitive calling of differentially methylated regions from bisulfite sequencing data. Genome Res. 2015 26:256-262.
+
+### BOWTIE
+- comment : An ultrafast, memory-efficient short read aligner
+- version : 2.2.3
+
+
+
+[^1]: Yuanyuan Li and Trygve O. Tollefsbol. Dna methylation detection: Bisulfite genomic sequencing analysis. *Epigenetics Protocols Methods in Molecular Biology*, 791:11–21, 2011.
+[^2]: Ioshikhes IP. and Zhang MQ. *Large-scale human promoter mapping using cpg islands*. Nature Genetics, 26(1):61–63, 2000.
+[^3]: Michael Weber, Ines Hellmann, and Michael B Stadler1 et. al. *Distribution, silencing potential and evolutionary impact of promoter dna methylation in the human genome*. Nature Genetics, 39:457–466, 2007.
+[^4]: Aimee M. Deaton and Adrian Bird. *Cpg islands and the regulation of transcription*. Genes and Dev, 25:1010–1022, 2011.
+[^5]: http://embossgui.sourceforge.net/demo/manual/newcpgreport.html
+
