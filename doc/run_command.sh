@@ -1,0 +1,1 @@
+/usr/bin/python /BiO/BioPeople/siyoo/MINE/bin/mine.py basic config.in --tools-fn /BiO/BioPeople/siyoo/MINE/bin/lib/tools.json --refs-fn /BiO/BioPeople/siyoo/MINE/ref/Macaca_fascicularis/ENS93/ref_M_fascicularis_ENS93.json --lib-path /BiO/BioPeople/siyoo/MINE/bin/lib

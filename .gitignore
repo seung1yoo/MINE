@@ -1,4 +1,7 @@
 *.pyc
 examples/
-ref/
-tools/
+ref/Chlorocebus_sabaeus/
+ref/Macaca_fascicularis/
+tools/Bismark_v0.19.1/
+tools/Report/
+tools/metilene/

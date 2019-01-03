@@ -1,0 +1,63 @@
+#
+# MINE (TBI Methylation analysis pipeline) Input
+#
+# ==========================================================
+#  Meta
+# ----------------------------------------------------------
+#
+SPECIES	M_fascicularis_ENS93
+HOME	/BiO/BioPeople/siyoo/MINE/examples
+OUTPUT	[HOME]/mine_v2
+#
+# ==========================================================
+#  Samples
+# ----------------------------------------------------------
+# INPUT [SAMPLE_ID] [PAIR_ID] [LIBRARY_TYPE] [PATH] [LABEL]
+#   PAIR_ID       INTEGER  1 or 2
+#   LibraryType   INTEGER  1 or 2 or 3
+#           1 - unstrand specific
+#           2 - first strand (TruSeq , SureSelect)
+#           3 - second strand
+#   LABEL
+#
+INPUT	1	1	1	[HOME]/Raw/TN1711D2406-1--ATCATTCC_1.fq.gz	TEST-1
+INPUT	1	2	1	[HOME]/Raw/TN1711D2406-1--ATCATTCC_2.fq.gz	TEST-1
+INPUT	2	1	1	[HOME]/Raw/TN1711D2407-1--GCCACATA_1.fq.gz	TEST-2
+INPUT	2	2	1	[HOME]/Raw/TN1711D2407-1--GCCACATA_2.fq.gz	TEST-2
+INPUT	3	1	1	[HOME]/Raw/TN1711D2408-1--ACCACTGT_1.fq.gz	TEST-3
+INPUT	3	2	1	[HOME]/Raw/TN1711D2408-1--ACCACTGT_2.fq.gz	TEST-3
+INPUT	4	1	1	[HOME]/Raw/TN1711D2409-1--CTGGCATA_1.fq.gz	TEST-4
+INPUT	4	2	1	[HOME]/Raw/TN1711D2409-1--CTGGCATA_2.fq.gz	TEST-4
+INPUT	5	1	1	[HOME]/Raw/TN1711D2410-1--ACCTCCAA_1.fq.gz	TEST-5
+INPUT	5	2	1	[HOME]/Raw/TN1711D2410-1--ACCTCCAA_2.fq.gz	TEST-5
+INPUT	6	1	1	[HOME]/Raw/TN1711D2411-1--GCGAGTAA_1.fq.gz	TEST-6
+INPUT	6	2	1	[HOME]/Raw/TN1711D2411-1--GCGAGTAA_2.fq.gz	TEST-6
+#
+# ==========================================================
+#  Differencially Methylation Rate
+# ----------------------------------------------------------
+# DMR [DMR_ID] [DMR_PAIR]
+#   DMR_PAIR     con1-con2-conN_case1-case2-caseN
+#
+DMR	1	1_3
+DMR	2	1-2-3_4-5-6
+#
+# ----------------------------------------------------------
+# CUTOFF	[P_VALUE/Q_VALUE]
+#   P_VALUE = Mann-Whitney_U test.
+#   Q_VALUE = based on MWU-test p-values.
+#
+#   example [P:0.05]
+#           [Q:0.01]
+#
+CUTOFF	P:0.05
+#
+# ==========================================================
+#  Target cg
+# ----------------------------------------------------------
+# TARGET [ON/OFF] [BED_PATH (sorted)]
+#
+#TARGET	OFF
+TARGET	ON	/BiO/BioPeople/siyoo/MINE/examples/target.cg.MacFas5.bed
+#
+#
