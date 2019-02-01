@@ -864,8 +864,7 @@ class ANNO_MERGE:
         annoTable_fn = os.path.join(self.out_dir, 'all.annoTable')
         self.annoTable_dic.setdefault('all', annoTable_fn)
         if os.path.exists(annoTable_fn):
-            continue
-
+            pass
 
     def anno_cpg(self):
         #### pair list-up

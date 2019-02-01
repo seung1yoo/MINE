@@ -1,7 +1,8 @@
 *.pyc
 examples/
-ref/Chlorocebus_sabaeus/
-ref/Macaca_fascicularis/
 tools/Bismark_v0.19.1/
 tools/Report/
 tools/metilene/
+ref/Chlorocebus_sabaeus/
+ref/Macaca_fascicularis/
+ref/Sus_scrofa/
