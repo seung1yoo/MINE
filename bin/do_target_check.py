@@ -55,6 +55,36 @@ class Do_targetcheck_sort:
                 self.eco.logger.info('Found pre-run : {0}'.format(out_fn))
                 continue
             opts = list()
+
+            opts.append(app_bedtools.exe)
+            opts.append('sort')
+            opts.append('-i')
+            opts.append(f_type_dic['call.bedGraph'])
+            opts.append('>')
+            opts.append('{0}.temp'.format(out_fn))
+            opts.append('\n')
+
+            opts.append('gzip')
+            opts.append('-c')
+            opts.append('{0}.temp'.format(out_fn))
+            opts.append('>')
+            opts.append(out_fn)
+            opts.append('\n')
+
+            opts.append('rm')
+            opts.append('{0}.temp'.format(out_fn))
+
+            cmds.append(' '.join(opts))
+        return cmds
+
+    def _make_cmds(self, app_bedtools, input_dic):
+        cmds = list()
+        for sam_num, f_type_dic in input_dic.iteritems():
+            out_fn = self.make_out_fn(sam_num)
+            if os.path.exists(out_fn) and os.path.getsize(out_fn) > 1000:
+                self.eco.logger.info('Found pre-run : {0}'.format(out_fn))
+                continue
+            opts = list()
             opts.append(app_bedtools.exe)
             opts.append('sort')
             opts.append('-i')
