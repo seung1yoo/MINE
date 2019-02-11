@@ -61,7 +61,7 @@ class Do_targetcheck_sort:
             opts.append(f_type_dic['call.bedGraph'])
             opts.append('|')
             opts.append('gzip')
-            opts.append('-f')
+            opts.append('-c')
             opts.append('>')
             opts.append(out_fn)
             cmds.append(' '.join(opts))
