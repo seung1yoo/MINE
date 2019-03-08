@@ -280,6 +280,7 @@ def main(mode, config, tools_fn, refs_fn):
         pipes.append('do_bismark_map')
         pipes.append('do_bismark_dedup')
         pipes.append('do_bismark_call')
+        pipes.append('do_bismark_cytosine')
         pipes.append('do_bismark_nucl')
         pipes.append('do_bismark_report')
         #
@@ -318,6 +319,8 @@ def main(mode, config, tools_fn, refs_fn):
             Do_bismark_dedup(pipe, mine, eco)
         elif pipe in ['do_bismark_call']:
             Do_bismark_call(pipe, mine, eco)
+        elif pipe in ['do_bismark_cytosine']:
+            Do_bismark_Cytosine(pipe, mine, eco)
         elif pipe in ['do_bismark_nucl']:
             Do_bismark_nucl(pipe, mine, eco)
         elif pipe in ['do_bismark_report']:

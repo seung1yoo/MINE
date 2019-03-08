@@ -22,7 +22,8 @@ class Do_targetcheck_sort:
         app_bedtools = App(self.mine.tools, "BEDTOOLS")
         #
         self.input_dic = self.select_input()
-        self.outdir = os.path.join(self.eco.room['analysis'], 'methyl_call')
+        self.outdir = os.path.join(self.eco.room['analysis'],
+                'methyl_call')
         self.eco.make_dir(self.outdir)
         self.make_samdir()
 

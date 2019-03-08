@@ -604,7 +604,7 @@ def cg_site_finder(fa_split_dic, home, name):
                 pos = idx+1
                 if '{0}{1}'.format(pre_base, base) in ['CG']:
                     out.write('{0}\t{1}\t{2}\t{3}{4}\n'.format(
-                        _chr, str(pos), str(pos+1), record.seq[idx-1], record.seq[idx]))
+                        _chr, str(pos-1), str(pos), record.seq[idx-1], record.seq[idx]))
                 pre_base = base
             #
         out.close()

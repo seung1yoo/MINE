@@ -45,7 +45,8 @@
                 "call":"[HOME]/bismark_methylation_extractor",
                 "nucl_cov":"[HOME]/bam2nuc",
                 "report":"[HOME]/bismark2report",
-                "summary":"[HOME]/bismark2summary"
+                "summary":"[HOME]/bismark2summary",
+                "c_cov":"[HOME]/coverage2cytosine"
             },
             "VERSION":"0.19.1",
             "QUE":"all.q",

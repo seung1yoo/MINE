@@ -203,15 +203,14 @@ class Do_bismark_call:
             lvs = [self.name, sam_num, 'call.cov', os.path.join(self.outdir, sam_num,
                        '{0}_1.clean_bismark_bt2_pe.deduplicated.bismark.cov.gz'.format(sam_num))]
             self.eco.add_to_ecosystem(lvs)
+            #lvs = [self.name, sam_num, 'call.cov.zero', os.path.join(self.outdir, sam_num,
+            #           '{0}_1.clean_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov.gz'.format(sam_num))]
             lvs = [self.name, sam_num, 'call.cov.zero', os.path.join(self.outdir, sam_num,
                        '{0}_1.clean_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov'.format(sam_num))]
             self.eco.add_to_ecosystem(lvs)
             lvs = [self.name, sam_num, 'call.bedGraph', os.path.join(self.outdir, sam_num,
                        '{0}_1.clean_bismark_bt2_pe.deduplicated.bedGraph.gz'.format(sam_num))]
             self.eco.add_to_ecosystem(lvs)
-            #lvs = [self.name, sam_num, 'call.cx', os.path.join(self.outdir, sam_num,
-            #           '{0}_1.clean_bismark_bt2_pe.deduplicated.CX_report.txt.gz'.format(sam_num))]
-            #self.eco.add_to_ecosystem(lvs)
             lvs = [self.name, sam_num, 'splitting.report', os.path.join(self.outdir, sam_num,
                        '{0}_1.clean_bismark_bt2_pe.deduplicated_splitting_report.txt'.format(sam_num))]
             self.eco.add_to_ecosystem(lvs)
@@ -222,30 +221,90 @@ class Do_bismark_call:
     def make_cmds(self, app_bsm, app_sts, input_dic):
         cmds = list()
         for sam_num, f_type_dic in input_dic.iteritems():
-            if os.path.exists(os.path.join(self.outdir,sam_num,'{0}_1.clean_bismark_bt2_pe.deduplicated.CX_report.txt.gz'.format(sam_num))):
+            call_fn = os.path.join(self.outdir,sam_num,\
+                    '{0}_1.clean_bismark_bt2_pe.deduplicated.bismark.cov.gz'.format(sam_num))
+            if not os.path.exists(call_fn):
+                opts = list()
+                opts.append(app_bsm.exec_s['call'])
+                opts.append('--multicore 8')
+                opts.append('--paired-end')
+                opts.append('--report')
+                opts.append('--gzip')
+                opts.append('--output')
+                opts.append(os.path.join(self.outdir, sam_num))
+                opts.append('--samtools_path')
+                opts.append(app_sts.home)
+                opts.append('--zero_based')
+                opts.append('--cytosine_report')
+                opts.append('--genome_folder')
+                opts.append(self.mine.refs['BISMARK_DIR'])
+                opts.append(self.eco.eco_dic['do_bismark_dedup'][sam_num]['dedup.bam'])
+            else:
                 continue
-            opts = list()
-            opts.append(app_bsm.exec_s['call'])
-            opts.append('--multicore 8')
-            opts.append('--paired-end')
-            opts.append('--report')
-            opts.append('--gzip')
-            opts.append('--output')
-            opts.append(os.path.join(self.outdir, sam_num))
-            opts.append('--samtools_path')
-            opts.append(app_sts.home)
-            opts.append('--CX_context')
-            opts.append('--zero_based')
-            opts.append('--cytosine_report')
-            opts.append('--genome_folder')
-            opts.append(self.mine.refs['BISMARK_DIR'])
-            opts.append(self.eco.eco_dic['do_bismark_dedup'][sam_num]['dedup.bam'])
             cmds.append(' '.join(opts))
         return cmds
 
     def select_input(self):
         input_dic = dict()
         input_dic = self.eco.eco_dic['do_filter_fastq']
+        return input_dic
+
+
+class Do_bismark_Cytosine:
+    def __init__(self, name, mine, eco):
+        # For debugging
+        mine.logger.debug(dir(mine))
+        eco.logger.debug(dir(eco))
+
+        # inheritance
+        self.name = name
+        self.mine = mine
+        self.eco = eco
+
+        # variable setting
+        app_bsm = App(self.mine.tools, "BISMARK")
+        #
+        self.input_dic = self.select_input()
+        self.outdir = os.path.join(self.eco.room['analysis'], 'do_bismark')
+        self.eco.make_dir(self.outdir)
+
+        # check_stats & run
+        if not self.eco.check_stats(self.name):
+            nucl_cmds = self.make_cmds(app_bsm, self.input_dic)
+            RunQsub(nucl_cmds, app_bsm.que, '10', self.eco.room['logs'], self.eco.room['scripts'], self.name)
+            self.update_ecosystem(self.input_dic)
+        else:
+            self.update_ecosystem(self.input_dic)
+        # finishing
+        self.eco.sync_ecosystem()
+        self.eco.add_stats(self.name)
+
+    def update_ecosystem(self, input_dic):
+        for sam_num, f_type_dic in input_dic.iteritems():
+            lvs = [self.name, sam_num, 'CpG.report', os.path.join(self.outdir, sam_num,'{0}.CX.CpG_report.txt'.format(sam_num))]
+            self.eco.add_to_ecosystem(lvs)
+
+    def make_cmds(self, app_bsm, input_dic):
+        cmds = list()
+        for sam_num, f_type_dic in input_dic.iteritems():
+            if not os.path.exists(os.path.join(self.outdir,sam_num,'{0}.CX.CpG_report.txt'.format(sam_num))):
+                opts = list()
+                opts.append(app_bsm.exec_s['c_cov'])
+                opts.append('--dir')
+                opts.append(os.path.join(self.outdir, sam_num))
+                opts.append('--genome_folder')
+                opts.append(self.mine.refs['BISMARK_DIR'])
+                opts.append('-o')
+                opts.append('{0}.CX'.format(sam_num))
+                opts.append(f_type_dic['call.cov.zero'])
+                cmds.append(' '.join(opts))
+            else:
+                continue
+        return cmds
+
+    def select_input(self):
+        input_dic = dict()
+        input_dic = self.eco.eco_dic['do_bismark_call']
         return input_dic
 
 
