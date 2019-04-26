@@ -281,21 +281,22 @@ class Do_bismark_Cytosine:
 
     def update_ecosystem(self, input_dic):
         for sam_num, f_type_dic in input_dic.iteritems():
-            lvs = [self.name, sam_num, 'CpG.report', os.path.join(self.outdir, sam_num,'{0}.CX.CpG_report.txt'.format(sam_num))]
+            lvs = [self.name, sam_num, 'CX.report', os.path.join(self.outdir, sam_num,'{0}.CX_report.txt'.format(sam_num))]
             self.eco.add_to_ecosystem(lvs)
 
     def make_cmds(self, app_bsm, input_dic):
         cmds = list()
         for sam_num, f_type_dic in input_dic.iteritems():
-            if not os.path.exists(os.path.join(self.outdir,sam_num,'{0}.CX.CpG_report.txt'.format(sam_num))):
+            if not os.path.exists(os.path.join(self.outdir,sam_num,'{0}.CX_report.txt'.format(sam_num))):
                 opts = list()
                 opts.append(app_bsm.exec_s['c_cov'])
                 opts.append('--dir')
                 opts.append(os.path.join(self.outdir, sam_num))
                 opts.append('--genome_folder')
                 opts.append(self.mine.refs['BISMARK_DIR'])
+                opts.append('--CX_context')
                 opts.append('-o')
-                opts.append('{0}.CX'.format(sam_num))
+                opts.append('{0}'.format(sam_num))
                 opts.append(f_type_dic['call.cov.zero'])
                 cmds.append(' '.join(opts))
             else:
