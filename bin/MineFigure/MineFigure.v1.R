@@ -94,12 +94,12 @@ ggsave(paste(mf_home, "AllGeneMethylRateByBin", paste("AllGeneMethylRateByBin", 
 
 all_gene_methylation_rate_DMC <- function(data) {
   data <- as.data.frame(data)
-  data_d_bin_dmc <- data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_S2", d_bin_dmc = data$S1_vs_S2.d_bin_dmc)
-  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_PIG_3", d_bin_dmc = data$S1_vs_PIG_3.d_bin_dmc))
-  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_PIG_4", d_bin_dmc = data$S1_vs_PIG_4.d_bin_dmc))
-  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S2_vs_PIG_3", d_bin_dmc = data$S2_vs_PIG_3.d_bin_dmc))
-  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S2_vs_PIG_4", d_bin_dmc = data$S2_vs_PIG_4.d_bin_dmc))
-  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "PIG_3_vs_PIG_4", d_bin_dmc = data$PIG_3_vs_PIG_4.d_bin_dmc))
+  data_d_bin_dmc <- data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_cont_vs_Liver_case", d_bin_dmc = data$Liver_cont_vs_Liver_case.d_bin_dmc)
+  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_PIG_3", d_bin_dmc = data$S1_vs_PIG_3.d_bin_dmc))
+  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_PIG_4", d_bin_dmc = data$S1_vs_PIG_4.d_bin_dmc))
+  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S2_vs_PIG_3", d_bin_dmc = data$S2_vs_PIG_3.d_bin_dmc))
+  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S2_vs_PIG_4", d_bin_dmc = data$S2_vs_PIG_4.d_bin_dmc))
+  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "PIG_3_vs_PIG_4", d_bin_dmc = data$PIG_3_vs_PIG_4.d_bin_dmc))
   
   data_plot <- ggplot(data_d_bin_dmc, aes(x=region_type, y=d_bin_dmc, col=cont_case)) + geom_line() +
     xlab('Up2k-GeneBody-Down2k') + ylab('Density of DMC in BIN') + 
@@ -109,10 +109,19 @@ all_gene_methylation_rate_DMC <- function(data) {
   return (data_plot)
 }
 
-data <- read.table("/Volumes/TBI_siyoo/TBI_NonHumanTeam/Report-repository/TBD180834-ALLBT-Pig-Bisulfite-Report-20190222/MineFigure/AllGeneMethylRateDMC/AllGeneMethylRateDMC.CHH.OA.DMC.ByBinSum", header = TRUE)
-all_gene_methylation_rate_DMC(data)
-ggsave("/Volumes/TBI_siyoo/TBI_NonHumanTeam/Report-repository/TBD180834-ALLBT-Pig-Bisulfite-Report-20190222/MineFigure/AllGeneMethylRateDMC/DMCByBin.CHH.jpg", dpi = 300, width = 10, height = 3)
+mf_home <- "/Volumes/TBI_siyoo/TBI_NonHumanTeam/Report-repository/TBD190324/MineFigure"
 
+context_type <- "CpG"
+context_type <- "CHG"
+context_type <- "CHH"
+
+strand_type <- "OA" #all
+strand_type <- "OB" #bottom
+strand_type <- "OT" #top
+
+data <- read.table(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum", sep = "."), sep = "/"), header = TRUE)
+all_gene_methylation_rate_DMC(data)
+ggsave(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum", "jpg", sep = "."), sep = "/"), dpi = 300, width = 10, height = 3)
 
 #################################  all gene methylation rate by bin (with Interest) ################################# 
 
