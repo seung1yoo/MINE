@@ -95,17 +95,16 @@ ggsave(paste(mf_home, "AllGeneMethylRateByBin", paste("AllGeneMethylRateByBin", 
 all_gene_methylation_rate_DMC <- function(data) {
   data <- as.data.frame(data)
   data_d_bin_dmc <- data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_cont_vs_Liver_case", d_bin_dmc = data$Liver_cont_vs_Liver_case.d_bin_dmc)
-  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_PIG_3", d_bin_dmc = data$S1_vs_PIG_3.d_bin_dmc))
-  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S1_vs_PIG_4", d_bin_dmc = data$S1_vs_PIG_4.d_bin_dmc))
-  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S2_vs_PIG_3", d_bin_dmc = data$S2_vs_PIG_3.d_bin_dmc))
-  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "S2_vs_PIG_4", d_bin_dmc = data$S2_vs_PIG_4.d_bin_dmc))
-  #data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "PIG_3_vs_PIG_4", d_bin_dmc = data$PIG_3_vs_PIG_4.d_bin_dmc))
-  
+  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_1_vs_Liver_2", d_bin_dmc = data$Liver_1_vs_Liver_2.d_bin_dmc))
+  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_1_vs_Liver_3", d_bin_dmc = data$Liver_1_vs_Liver_3.d_bin_dmc))
+  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_26_vs_Liver_2", d_bin_dmc = data$Liver_26_vs_Liver_2.d_bin_dmc))
+  data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_26_vs_Liver_3", d_bin_dmc = data$Liver_26_vs_Liver_3.d_bin_dmc))
+
   data_plot <- ggplot(data_d_bin_dmc, aes(x=region_type, y=d_bin_dmc, col=cont_case)) + geom_line() +
     xlab('Up2k-GeneBody-Down2k') + ylab('Density of DMC in BIN') + 
     theme_bw() +
     scale_color_manual(name="Comparison pair", values=brewer.pal(6, 'Set1'))
-  
+  data_plot
   return (data_plot)
 }
 
