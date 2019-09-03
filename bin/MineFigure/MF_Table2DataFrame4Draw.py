@@ -159,8 +159,7 @@ class MethylRateByBin:
             region_bin_id = items[idx_dic['region_type']]
             region_bin_order = self.bin_order_dic[region_bin_id]
             #
-            for item, idx in idx_dic.items():
-                if item.endswith(
+            # ING.......
 
 def main(args):
     if not os.path.isdir(args.out_dir):

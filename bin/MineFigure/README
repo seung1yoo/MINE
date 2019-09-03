@@ -1,0 +1,127 @@
+
+
+
+USAGE
+
+==============================
+1. split_cx_report.py
+==============================
+#fork
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt
+    python split_cx_report.py /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt
+#join
+
+
+==============================
+2. MineFigure.py
+==============================
+
+2.1. AllGeneMethylRate
+
+#fork
+    python MineFigure.py --kind AllGeneMethylRate --prefix AllGeneMethylRate/AllGeneMethylRate.CpG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 S1:S1 S2:S2 PIG_3:PIG_3 PIG_4:PIG_4 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt_CpG_OA
+    python MineFigure.py --kind AllGeneMethylRate --prefix AllGeneMethylRate/AllGeneMethylRate.CHG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 S1:S1 S2:S2 PIG_3:PIG_3 PIG_4:PIG_4 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt_CHG_OA
+    python MineFigure.py --kind AllGeneMethylRate --prefix AllGeneMethylRate/AllGeneMethylRate.CHH.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 S1:S1 S2:S2 PIG_3:PIG_3 PIG_4:PIG_4 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt_CHH_OA
+#join
+
+2.2. AllGeneMethylRateByBin
+
+#fork
+    python MineFigure.py --kind AllGeneMethylRateByBin --prefix AllGeneMethylRateByBin/AllGeneMethylRateByBin.CpG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 S1:S1 S2:S2 PIG_3:PIG_3 PIG_4:PIG_4 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt_CpG_OA
+    python MineFigure.py --kind AllGeneMethylRateByBin --prefix AllGeneMethylRateByBin/AllGeneMethylRateByBin.CHG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 S1:S1 S2:S2 PIG_3:PIG_3 PIG_4:PIG_4 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt_CHG_OA
+    python MineFigure.py --kind AllGeneMethylRateByBin --prefix AllGeneMethylRateByBin/AllGeneMethylRateByBin.CHH.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 S1:S1 S2:S2 PIG_3:PIG_3 PIG_4:PIG_4 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0005/S0005.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0006/S0006.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0007/S0007.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0008/S0008.CX_report.txt_CHH_OA
+#join
+
+2.3.1. AllGeneMethylRateDMC 
+
+#fork
+    python MineFigure.py --kind AllGeneMethylRateDMC --prefix AllGeneMethylRateDMC_Sample/AllGeneMethylRateDMC.CpG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 --cont-case-s Liver_1:Liver_2 Liver_1:Liver_3 Liver_26:Liver_2 Liver_26:Liver_3 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CpG_OA
+    python MineFigure.py --kind AllGeneMethylRateDMC --prefix AllGeneMethylRateDMC_Sample/AllGeneMethylRateDMC.CHG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 --cont-case-s Liver_1:Liver_2 Liver_1:Liver_3 Liver_26:Liver_2 Liver_26:Liver_3 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHG_OA
+    python MineFigure.py --kind AllGeneMethylRateDMC --prefix AllGeneMethylRateDMC_Sample/AllGeneMethylRateDMC.CHH.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_1 Liver_2:Liver_2 Liver_3:Liver_3 Liver_26:Liver_26 --cont-case-s Liver_1:Liver_2 Liver_1:Liver_3 Liver_26:Liver_2 Liver_26:Liver_3 --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHH_OA
+#join
+
+2.3.2. AllGeneMethylRateDMC (Case of A sample is been in different groups)
+
+#fork
+    python MineFigure.py --kind AllGeneMethylRateDMC --prefix AllGeneMethylRateDMC_Group/AllGeneMethylRateDMC.CpG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_cont Liver_2:Liver_case Liver_3:Liver_case Liver_26:Liver_cont --cont-case-s Liver_cont:Liver_case --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CpG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CpG_OA
+    python MineFigure.py --kind AllGeneMethylRateDMC --prefix AllGeneMethylRateDMC_Group/AllGeneMethylRateDMC.CHG.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_cont Liver_2:Liver_case Liver_3:Liver_case Liver_26:Liver_cont --cont-case-s Liver_cont:Liver_case --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHG_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHG_OA
+    python MineFigure.py --kind AllGeneMethylRateDMC --prefix AllGeneMethylRateDMC_Group/AllGeneMethylRateDMC.CHH.OA --gtf /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.95.chr.gtf --fai /BiO/BioPeople/siyoo/MINE/ref/Sus_scrofa/ENS95/Sus_scrofa.Sscrofa11.1.dna.toplevel.fa.fai --sample-group-s Liver_1:Liver_cont Liver_2:Liver_case Liver_3:Liver_case Liver_26:Liver_cont --cont-case-s Liver_cont:Liver_case --cxreports /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0001/S0001.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0002/S0002.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0003/S0003.CX_report.txt_CHH_OA /BiO/BioProjects/TBD190324-ALLBT-Pig-Bisulfite-20190624/mine/analysis/do_bismark/S0004/S0004.CX_report.txt_CHH_OA
+#join
+
+==============================
+3. MineFigure.v1.R
+==============================
+
+3.1. AllGeneMethylRate
+
+AllGeneMethylRate
+└── AllGeneMethylRate.[CpG,CHG,CHH].[OA,OT,OB]._methyl.[extend,origin,up,down] ==> Input file for boxplot
+
+3.1.1. AllGeneMethylRate with Interested Genes
+
+#fork
+    python MF_GrepInterestedGenes.py InterestedGenes.txt WBS AllGeneMethylRate/AllGeneMethylRate.CpG.OA._methyl.origin --samples S1 S2 PIG_3 PIG_4 Liver_1 Liver_2 Liver_3 Liver_26
+    python MF_GrepInterestedGenes.py InterestedGenes.txt WBS AllGeneMethylRate/AllGeneMethylRate.CHG.OA._methyl.origin --samples S1 S2 PIG_3 PIG_4 Liver_1 Liver_2 Liver_3 Liver_26
+    python MF_GrepInterestedGenes.py InterestedGenes.txt WBS AllGeneMethylRate/AllGeneMethylRate.CHH.OA._methyl.origin --samples S1 S2 PIG_3 PIG_4 Liver_1 Liver_2 Liver_3 Liver_26
+#join
+==> there are message some error, but, Interested gene list output for AllGeneMethylRate is OK.
+
+example of InterestedGenes.txt
+...
+ENSSSCG00000007700
+ENSSSCG00000007702
+ENSSSCG00000007703
+...
+
+AllGeneMethylRate
+└── AllGeneMethylRate.[CpG,CHG,CHH].[OA,OT,OB]._methyl.[extend,origin,up,down].Interested.[WBS] ==> Input file for boxplot (or modify for heatmap)
+
+
+3.2. AllGeneMethylRateByBin
+
+AllGeneMethylRateByBin/
+├── AllGeneMethylRateByBin.[CpG,CHG,CHH].[OA,OT,OB]._methylByBin
+└── AllGeneMethylRateByBin.[CpG,CHG,CHH].[OA,OT,OB]._methylByBinSum ==> input file for 
+
+3.2.1. AllGeneMethylRateByBin with Interested Genes
+
+#fork
+    python MF_GrepInterestedGenes.py InterestedGenes.txt WBS AllGeneMethylRateByBin/AllGeneMethylRateByBin.CpG.OA._methylByBin --samples S1 S2 PIG_3 PIG_4 Liver_1 Liver_2 Liver_3 Liver_26
+    python MF_GrepInterestedGenes.py InterestedGenes.txt WBS AllGeneMethylRateByBin/AllGeneMethylRateByBin.CHG.OA._methylByBin --samples S1 S2 PIG_3 PIG_4 Liver_1 Liver_2 Liver_3 Liver_26
+    python MF_GrepInterestedGenes.py InterestedGenes.txt WBS AllGeneMethylRateByBin/AllGeneMethylRateByBin.CHH.OA._methylByBin --samples S1 S2 PIG_3 PIG_4 Liver_1 Liver_2 Liver_3 Liver_26
+#join
+
+AllGeneMethylRateByBin/
+├── AllGeneMethylRateByBin.[CpG,CHG,CHH].[OA,OT,OB]._methylByBin.Interested.WBS
+└── AllGeneMethylRateByBin.[CpG,CHG,CHH].[OA,OT,OB]._methylByBin.Interested.WBS.Sum
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
