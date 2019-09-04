@@ -145,6 +145,12 @@ ggsave(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", cont
 ## Interested 
 data <- read.table(paste(mf_home, "AllGeneMethylRateDMC_v2", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum.interested.WBS", sep = "."), sep = "/"), header = TRUE)
 
+data_plot <- parse_DMC_ByBinSum_for_d_bin_dmc(data)
+ggsave(paste(mf_home, "AllGeneMethylRateDMC_v2", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum.interested.WBS", "density", "jpg", sep = "."), sep = "/"), dpi = 300, width = 10, height = 3)
+
+data_plot <- parse_DMC_ByBinSum_for_avg_diffdelta(data)
+ggsave(paste(mf_home, "AllGeneMethylRateDMC_v2", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum.interested.WBS", "diffdelta", "jpg", sep = "."), sep = "/"), dpi = 300, width = 10, height = 3)
+
 
 
 #################################  all gene methylation rate by bin (with Interest) ################################# 
