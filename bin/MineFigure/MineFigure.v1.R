@@ -92,7 +92,7 @@ ggsave(paste(mf_home, "AllGeneMethylRateByBin", paste("AllGeneMethylRateByBin", 
 
 ################################# all gene DMC ################################# 
 
-all_gene_methylation_rate_DMC <- function(data) {
+parse_DMC_ByBinSum_for_d_bin_dmc <- function(data) {
   data <- as.data.frame(data)
   data_d_bin_dmc <- data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_cont_vs_Liver_case", d_bin_dmc = data$Liver_cont_vs_Liver_case.d_bin_dmc)
   data_d_bin_dmc <- rbind(data_d_bin_dmc, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_1_vs_Liver_2", d_bin_dmc = data$Liver_1_vs_Liver_2.d_bin_dmc))
@@ -102,6 +102,22 @@ all_gene_methylation_rate_DMC <- function(data) {
 
   data_plot <- ggplot(data_d_bin_dmc, aes(x=region_type, y=d_bin_dmc, col=cont_case)) + geom_line() +
     xlab('Up2k-GeneBody-Down2k') + ylab('Density of DMC in BIN') + 
+    theme_bw() +
+    scale_color_manual(name="Comparison pair", values=brewer.pal(6, 'Set1'))
+  data_plot
+  return (data_plot)
+}
+
+parse_DMC_ByBinSum_for_avg_diffdelta <- function(data) {
+  data <- as.data.frame(data)
+  data_avg_diffdelta <- data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_cont_vs_Liver_case", avg_diffdelta = data$Liver_cont_vs_Liver_case.avg_diffdelta)
+  data_avg_diffdelta <- rbind(data_avg_diffdelta, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_1_vs_Liver_2", avg_diffdelta = data$Liver_1_vs_Liver_2.avg_diffdelta))
+  data_avg_diffdelta <- rbind(data_avg_diffdelta, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_1_vs_Liver_3", avg_diffdelta = data$Liver_1_vs_Liver_3.avg_diffdelta))
+  data_avg_diffdelta <- rbind(data_avg_diffdelta, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_26_vs_Liver_2", avg_diffdelta = data$Liver_26_vs_Liver_2.avg_diffdelta))
+  data_avg_diffdelta <- rbind(data_avg_diffdelta, data.frame(region_type = c(1:length(data$region_type)), cont_case = "Liver_26_vs_Liver_3", avg_diffdelta = data$Liver_26_vs_Liver_3.avg_diffdelta))
+  
+  data_plot <- ggplot(data_avg_diffdelta, aes(x=region_type, y=avg_diffdelta, col=cont_case)) + geom_line() +
+    xlab('Up2k-GeneBody-Down2k') + ylab('Avg.Delta of DMC in BIN') + 
     theme_bw() +
     scale_color_manual(name="Comparison pair", values=brewer.pal(6, 'Set1'))
   data_plot
@@ -119,8 +135,13 @@ strand_type <- "OB" #bottom
 strand_type <- "OT" #top
 
 data <- read.table(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum", sep = "."), sep = "/"), header = TRUE)
-all_gene_methylation_rate_DMC(data)
-ggsave(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum", "jpg", sep = "."), sep = "/"), dpi = 300, width = 10, height = 3)
+
+data_plot <- parse_DMC_ByBinSum_for_d_bin_dmc(data)
+ggsave(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum", "density", "jpg", sep = "."), sep = "/"), dpi = 300, width = 10, height = 3)
+
+data_plot <- parse_DMC_ByBinSum_for_avg_diffdelta(data)
+ggsave(paste(mf_home, "AllGeneMethylRateDMC", paste("AllGeneMethylRateDMC", context_type, strand_type, "DMC.ByBinSum", "diffdelta", "jpg", sep = "."), sep = "/"), dpi = 300, width = 10, height = 3)
+
 
 #################################  all gene methylation rate by bin (with Interest) ################################# 
 
