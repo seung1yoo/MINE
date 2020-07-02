@@ -6,8 +6,12 @@ import sys
 from lib.Qsub import *
 from Bio import SeqIO
 from subprocess import Popen, PIPE
+#
 import matplotlib as mpl
-import matplotlib.pylab as plt
+if os.environ.get('DISPLAY','') == '':
+    print('no display found. Using non-interactive Agg backend')
+    mpl.use('Agg')
+import matplotlib.pyplot as plt
 #
 import json
 #
