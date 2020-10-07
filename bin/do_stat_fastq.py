@@ -49,6 +49,7 @@ class Do_stat_fastq:
             opts.append(app.exe)
             opts.append(f_type_dic['1.fq.gz'])
             opts.append(f_type_dic['2.fq.gz'])
+            opts.append(stat_fn)
             cmds.append(' '.join(opts))
         return cmds
 

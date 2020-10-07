@@ -16,7 +16,7 @@
         },
         "STAT_FQ":{
             "HOME":"/BiO/BioPeople/siyoo/MINE/utils",
-            "EXEC":"[HOME]/fq_stat.py",
+            "EXEC":"[HOME]/FastqStatExtractFastqGZ.pairedend.py",
             "NAME":"fq_stat",
             "VERSION":"1",
             "QUE":"all.q",
