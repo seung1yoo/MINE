@@ -25,12 +25,13 @@
             "__comment":""
         },
         "FILTER_FQ":{
-            "HOME":"/BiO/BioTools/Rine/Tools/PyApps/bin",
-            "EXEC":"[HOME]/cutadapt",
+            "HOME":"/BiO/BioPeople/siyoo/MINE/utils",
+            "EXEC":"[HOME]/fq_filter.py",
             "NAME":"fq_filter",
             "VERSION":"2",
             "QUE":"all.q",
             "CITATION":"",
+            "INTERPRETER":"/usr/bin/python",
             "__comment":"tbi in-house script for raw data cleaning"
         },
         "BISMARK":{

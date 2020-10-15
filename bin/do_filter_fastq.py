@@ -50,14 +50,16 @@ class Do_filter_fastq:
                 continue
             opts = list()
             opts.append(app.exe)
-            opts.append('0.1')
-            opts.append('20')
-            opts.append('0.4')
-            opts.append('0')
-            opts.append(f_type_dic['1.fq.gz'])
+            opts.append('-q 20')
+            opts.append('-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC')
+            opts.append('-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT')
+            opts.append('--minimum-length 50')
+            opts.append('-o')
             opts.append(os.path.join(self.outdir,'{0}_1.clean.fq.gz'.format(sam_num)))
-            opts.append(f_type_dic['2.fq.gz'])
+            opts.append('-p')
             opts.append(os.path.join(self.outdir,'{0}_2.clean.fq.gz'.format(sam_num)))
+            opts.append(f_type_dic['1.fq.gz'])
+            opts.append(f_type_dic['2.fq.gz'])
             cmds.append(' '.join(opts))
         return cmds
 

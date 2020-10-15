@@ -37,8 +37,8 @@ class Do_report_sample:
         #
         self.seq_contents = ['N_BASE','N_BASE_Q30','N_BASE_Q20',
                              'N_READ','N_READ_Q30','N_READ_Q20',
-                             'NT_GC','NT_AT','NT_N',
-                             'LEN_MAX','LEN_MIN','LEN_AVG']
+                             'NT_GC','NT_AT','NT_N']
+                             #'LEN_MAX','LEN_MIN','LEN_AVG']
         self.seq_stat_fn = os.path.join(self.outdir,'Sequence_Stat.xls')
         #
         self.align_contents = ['N_READ_IN','N_READ_MAP',
@@ -241,6 +241,58 @@ class Do_report_sample:
                 seqstat_dic[sam_num] = self.parse_seqstat_fn(seqstat_fn, _type, seqstat_dic[sam_num])
         return seqstat_dic
 
+    def parse_seqstat_fn(self, seqstat_fn, _type, _seqstat_dic):
+        n_base = 0
+        n_base_q30 = 0
+        n_base_q20 = 0
+        n_read = 0
+        n_read_q30 = 0
+        n_read_q20 = 0
+        nt_gc = 0
+        nt_at = 0
+        nt_n = 0
+        len_max = 0
+        len_min = 0
+        len_avg = 0
+        #
+        for line in open(seqstat_fn):
+            items = line.rstrip('\n').split('\t')
+            if line.startswith('#'):
+                idx_dic = dict()
+                for idx, item in enumerate(items):
+                    idx_dic.setdefault(item, idx)
+                continue
+            n_base = items[idx_dic['totalLength']]
+            n_base_q30 = str(int(items[dix_dic['totalQ30BaseCntR1']]) + \
+                             int(items[dix_dic['totalQ30BaseCntR2']]))
+            n_base_q20 = str(int(items[dix_dic['totalQ20BaseCntR1']]) + \
+                             int(items[dix_dic['totalQ20BaseCntR2']]))
+            n_read = items[idx_dic['#totalReadCnt']]
+            n_read_q30 = str(int(items[dix_dic['totalQ30ReadCntR1']]) + \
+                             int(items[dix_dic['totalQ30ReadCntR2']]))
+            n_read_q20 = str(int(items[dix_dic['totalQ20ReadCntR1']]) + \
+                             int(items[dix_dic['totalQ20ReadCntR2']]))
+            nt_gc = items[idx_dic['totalGCCnt']]
+            nt_at = str(int(items[idx_dic['totalLength']]) - \
+                        int(items[idx_dic['totalGCCnt']]) - \
+                        int(items[idx_dic['totalNCnt']]))
+            nt_n = items[idx_dic['totalNCnt']]
+        #
+        _seqstat_dic.setdefault('N_BASE', {}).setdefault(_type, n_base)
+        _seqstat_dic.setdefault('N_BASE_Q30', {}).setdefault(_type, n_base_q30)
+        _seqstat_dic.setdefault('N_BASE_Q20', {}).setdefault(_type, n_base_q20)
+        _seqstat_dic.setdefault('N_READ', {}).setdefault(_type, n_read)
+        _seqstat_dic.setdefault('N_READ_Q30', {}).setdefault(_type, n_read_q30)
+        _seqstat_dic.setdefault('N_READ_Q20', {}).setdefault(_type, n_read_q20)
+        _seqstat_dic.setdefault('NT_GC', {}).setdefault(_type, nt_gc)
+        _seqstat_dic.setdefault('NT_AT', {}).setdefault(_type, nt_at)
+        _seqstat_dic.setdefault('NT_N', {}).setdefault(_type, nt_n)
+        _seqstat_dic.setdefault('LEN_MAX', {}).setdefault(_type, len_max)
+        _seqstat_dic.setdefault('LEN_MIN', {}).setdefault(_type, len_min)
+        _seqstat_dic.setdefault('LEN_AVG', {}).setdefault(_type, len_avg)
+        #
+        return _seqstat_dic
+
     def iter_seqstat_fh(self, fh):
         lines = list()
         for line in fh:
@@ -252,7 +304,7 @@ class Do_report_sample:
                 lines.append(line.rstrip('\n'))
         yield lines
 
-    def parse_seqstat_fn(self, seqstat_fn, _type, _seqstat_dic):
+    def _parse_seqstat_fn(self, seqstat_fn, _type, _seqstat_dic):
         n_base = 0
         n_base_q30 = 0
         n_base_q20 = 0
@@ -381,7 +433,7 @@ class Do_report_dmr:
             lvs = [self.name, dmr_num, 'anno2dmr', anno2dmr_fn]
             self.eco.add_to_ecosystem(lvs)
         #
-    
+
     def anno2dmr_dic_maker(self, dmr_rpt_dic):
         anno2dmr_f_dic = dict()
         for dmr_num, dmr_rpt_fn in dmr_rpt_dic.iteritems():
@@ -424,7 +476,7 @@ class Do_report_dmr:
                 #
             out.close()
         return anno2dmr_f_dic
-    
+
     def gene2dmr_converter(self, dmr_rpt_fn):
         gene2dmr_dic = dict()
         dmrInfo_dic = dict()

@@ -201,7 +201,9 @@ class Eco(Mine):
             self.eco_dic[lv1].setdefault(lv2, {})
             self.eco_dic[lv1][lv2].setdefault(lv3, lv4)
         else:
-            self.logger.error('{2} is NOT exist {0}'.format(lv4))
+            #self.logger.error('{2} is NOT exist {0}'.format(lv4))
+            print(lv4)
+            self.logger.error('{0} is NOT exist.'.format(lv4))
             sys.exit()
 
     def add_stats(self, lv1):

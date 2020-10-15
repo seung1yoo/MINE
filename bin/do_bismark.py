@@ -31,7 +31,7 @@ class Do_bismark_map:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             map_cmds = self.make_cmds(app_bsm, app_sts, app_bwi, self.input_dic)
-            RunQsub(map_cmds, app_bsm.que, '16', self.eco.room['logs'], self.eco.room['scripts'], self.name)
+            RunQsub(map_cmds, app_bsm.que, '40', self.eco.room['logs'], self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
         else:
             self.update_ecosystem(self.input_dic)
@@ -107,7 +107,7 @@ class Do_bismark_dedup:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             dedup_cmds = self.make_cmds(app_bsm, app_sts, self.input_dic)
-            RunQsub(dedup_cmds, app_bsm.que, '10', self.eco.room['logs'], self.eco.room['scripts'], self.name)
+            RunQsub(dedup_cmds, app_bsm.que, '40', self.eco.room['logs'], self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
         else:
             self.update_ecosystem(self.input_dic)
@@ -171,7 +171,7 @@ class Do_bismark_call:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             call_cmds = self.make_cmds(app_bsm, app_sts, self.input_dic)
-            RunQsub(call_cmds, app_bsm.que, '8', self.eco.room['logs'], self.eco.room['scripts'], self.name)
+            RunQsub(call_cmds, app_bsm.que, '16', self.eco.room['logs'], self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
         else:
             self.update_ecosystem(self.input_dic)
@@ -271,7 +271,7 @@ class Do_bismark_Cytosine:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             nucl_cmds = self.make_cmds(app_bsm, self.input_dic)
-            RunQsub(nucl_cmds, app_bsm.que, '10', self.eco.room['logs'], self.eco.room['scripts'], self.name)
+            RunQsub(nucl_cmds, app_bsm.que, '16', self.eco.room['logs'], self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
         else:
             self.update_ecosystem(self.input_dic)
@@ -332,7 +332,7 @@ class Do_bismark_nucl:
         # check_stats & run
         if not self.eco.check_stats(self.name):
             nucl_cmds = self.make_cmds(app_bsm, app_sts, self.input_dic)
-            RunQsub(nucl_cmds, app_bsm.que, '10', self.eco.room['logs'], self.eco.room['scripts'], self.name)
+            RunQsub(nucl_cmds, app_bsm.que, '8', self.eco.room['logs'], self.eco.room['scripts'], self.name)
             self.update_ecosystem(self.input_dic)
         else:
             self.update_ecosystem(self.input_dic)
@@ -387,14 +387,14 @@ class Do_bismark_report:
         #
         if not self.eco.check_stats(self.name):
             report_cmds = self.make_report_cmds(app, self.input_dic)
-            RunQsub(report_cmds, app.que, '10',
+            RunQsub(report_cmds, app.que, '8',
                     self.eco.room['logs'],
                     self.eco.room['scripts'],
                     '{0}_each'.format(self.name))
             self.update_ecosystem_report(self.input_dic)
             #
             summary_cmds = self.make_summary_cmds(app, self.input_dic)
-            RunQsub(summary_cmds, app.que, '10',
+            RunQsub(summary_cmds, app.que, '8',
                     self.eco.room['logs'],
                     self.eco.room['scripts'],
                     '{0}_summary'.format(self.name))
