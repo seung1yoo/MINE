@@ -10,7 +10,7 @@
             "EXEC":"[HOME]/fastqc",
             "NAME":"fastqc",
             "VERSION":"0.11.2",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "CITATION":"",
             "__comment":""
         },
@@ -19,7 +19,7 @@
             "EXEC":"[HOME]/FastqStatExtractFastqGZ.pairedend.py",
             "NAME":"fq_stat",
             "VERSION":"1",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "CITATION":"",
             "INTERPRETER":"/usr/bin/python",
             "__comment":""
@@ -29,7 +29,7 @@
             "EXEC":"[HOME]/cutadapt",
             "NAME":"fq_filter",
             "VERSION":"2",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "CITATION":"",
             "__comment":"tbi in-house script for raw data cleaning"
         },
@@ -48,7 +48,7 @@
                 "c_cov":"[HOME]/coverage2cytosine"
             },
             "VERSION":"0.19.1",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "CITATION":"Krueger F, Andrews SR. Bismark: a flexible aligner and methylation caller for Bisulfite-Seq applications. Bioinformatics. 2011 27(11):1571-2.",
             "__comment":"A tools to map bisulfite converted sequence reads and determine cytosine methylation states."
         },
@@ -57,7 +57,7 @@
             "EXEC":"[HOME]/samtools",
             "NAME":"Samtools",
             "VERSION":"1.2",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "CITATION":"Li H. et al., Bioinformatics. 2009 Aug 15, 25(16):2078-9",
             "__comment":"This is THE Samtools."
         },
@@ -66,7 +66,7 @@
             "EXEC":"[HOME]/bowtie2",
             "NAME":"bowtie2",
             "VERSION":"2.2.3",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "__comment":"NGS mapper"
         },
         "METILENE":{
@@ -79,7 +79,7 @@
             },
             "NAME":"metilene",
             "VERSION":"0.2-7",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "CITATION":"Frank Jühling, Helene Kretzmer, Stephan H. Bernhart, Christian Otto, Peter F. Stadler, and Steve Hoffmann. metilene: Fast and sensitive calling of differentially methylated regions from bisulfite sequencing data. Genome Res. 2015 26:256-262.", 
             "__comment":"Annotate DMRs and DMCs from Methyl-seq data."
         },
@@ -88,7 +88,7 @@
             "EXEC":"[HOME]/bedtools",
             "NAME":"BEDtools",
             "VERSION":"2.17.0",
-            "QUE":"all.q",
+            "QUE":"all.q@cat.ptbio.kr",
             "__comment":"This is THE BEDtools."
         },
         "__comment":"MINE's TOOLS_JSON IN TIGER SERVER"

@@ -11,12 +11,12 @@ def manageQsub(_qlist, _qname, _logdir, _thread):
     for qsub in _qlist :
         if _thread == '1' :
             Jname = "{0}/{1}".format(_logdir, qsub.split("/")[-1])
-            qsubOutput = commands.getoutput("qsub -q %s -cwd -o %s.stout -e %s.error -S /bin/bash %s" %(_qname, Jname, Jname, qsub))
+            qsubOutput = commands.getoutput("qsub -q %s -cwd -o %s.stout -e %s.error -S /bin/bash -l hostname=cat.ptbio.kr %s" %(_qname, Jname, Jname, qsub))
             job = qsubOutput.split(" ")[2]
             jobs.append(job)
         else :
             Jname = "{0}/{1}".format(_logdir, qsub.split("/")[-1])
-            qsubOutput = commands.getoutput("qsub -q %s -cwd -pe smp %s -o %s.stout -e %s.error -S /bin/bash %s" %(_qname, _thread, Jname, Jname, qsub))
+            qsubOutput = commands.getoutput("qsub -q %s -cwd -pe smp %s -o %s.stout -e %s.error -S /bin/bash -l hostname=cat.ptbio.kr %s" %(_qname, _thread, Jname, Jname, qsub))
             job = qsubOutput.split(" ")[2]
             jobs.append(job)
 

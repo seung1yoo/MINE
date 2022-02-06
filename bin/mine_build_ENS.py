@@ -15,12 +15,12 @@ import matplotlib.pyplot as plt
 #
 import json
 #
-bismark_build = '/BiO/BioPeople/siyoo/MINE/tools/Bismark_v0.19.1/bismark_genome_preparation'
-samtools = '/BiO/BioTools/Rine/Tools/samtools/current/samtools'
+bismark_build = 'bismark_genome_preparation'
+samtools = 'samtools'
 bowtie2 = '/BiO/BioTools/bowtie/bowtie2-2.2.3'
-newcpgreport = '/usr/bin/newcpgreport'
-bedtools = '/usr/bin/bedtools'
-classify_promt = '/BiO/BioPeople/siyoo/MINE/bin/mine_build_promt.py'
+newcpgreport = 'newcpgreport'
+bedtools = 'bedtools'
+classify_promt = '/TBI/Share/BioPeople/siyoo/Pipelines/MINE/bin/mine_build_promt.py'
 
 def fai_to_len(fai):
     cmds = list()
@@ -217,6 +217,7 @@ class ANNO_CGI:
         for _chr, report_fn in self.report_dic.iteritems():
             cgi_dic = dict()
             cgi_num = 0
+            print(report_fn)
             for blocks in self.split_report(open(report_fn)):
                 if blocks[0] in ['detected']:
                     continue # FT no islands detected
@@ -228,13 +229,13 @@ class ANNO_CGI:
                 #
                 # length filter
                 # ref. Nucleic Acids Res. 33 (20): e176.
-                # In mammalian genomes, CpG islands are typically 300-3,000 base pairs in length, 
+                # In mammalian genomes, CpG islands are typically 300-3,000 base pairs in length,
                 # and have been found in or near approximately 40% of promoters of mammalian genes.
                 #
                 if cgi_len > 3000 or cgi_len < 200:
                     continue
                 #
-                # a GC percentage greater than 50%, and an observed-to-expected CpG ratio greater than 60%. 
+                # a GC percentage greater than 50%, and an observed-to-expected CpG ratio greater than 60%.
                 #
                 if gc_ratio < 50.0:
                     continue
